@@ -63,7 +63,7 @@ zokou({
         forwardingScore: 999,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-          newsletterJid: "120363288304618280@newsletter",
+          newsletterJid: "120363417804135599@newsletter",
           newsletterName: "NEXUS-AI",
           serverMessageId: -1
         }
