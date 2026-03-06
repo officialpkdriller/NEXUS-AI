@@ -1,4 +1,4 @@
-<h1 align="center"> 𝔾𝕆𝕆𝔻ℂℍ𝕀𝕃𝔻 𝕏𝕄𝔻 </h1>
+<h1 align="center"> NEXUS-AI </h1>
 
 <p align="center">
   <a href="https://github.com/officialpkdiller/NEXUS-AI">
