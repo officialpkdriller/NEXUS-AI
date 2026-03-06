@@ -1,46 +1,87 @@
+const { zokou } = require("../framework/zokou");
 const axios = require("axios");
-const {
-  zokou
-} = require("../framework/zokou");
+
 zokou({
-  'nomCom': 'weather',
-  'reaction': "🌡️",
-  'categorie': 'Search'
-}, async (_0x34a5bf, _0x5b25ba, _0x27b5ed) => {
-  const {
-    repondre: _0x8466ad,
-    arg: _0x3dfdee,
-    ms: _0x2b1148
-  } = _0x27b5ed;
-  const _0x146eda = _0x3dfdee.join(" ");
-  if (!_0x146eda) {
-    return _0x8466ad("Give me location...");
-  }
-  try {
-    const _0x335bfd = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
-      'params': {
-        'q': _0x146eda,
-        'units': "metric",
-        'appid': "060a6bcfa19809c2cd4d97a212b19273",
-        'language': 'en'
-      }
-    });
-    const _0x222c8f = _0x335bfd.data;
-    const _0x2a4b2d = _0x222c8f.name;
-    const _0x29b590 = _0x222c8f.main.temp;
-    const _0x84bb24 = _0x222c8f.main.feels_like;
-    const _0x4a81f2 = _0x222c8f.main.temp_min;
-    const _0x3e4cba = _0x222c8f.main.temp_max;
-    const _0x4825d2 = _0x222c8f.weather[0x0].description;
-    const _0x5d9de8 = _0x222c8f.main.humidity;
-    const _0x5d6085 = _0x222c8f.wind.speed;
-    const _0x576d7b = _0x222c8f.rain ? _0x222c8f.rain['1h'] : 0x0;
-    const _0x2b2fae = _0x222c8f.clouds.all;
-    const _0x49cd4e = new Date(_0x222c8f.sys.sunrise * 0x3e8);
-    const _0x2d52fe = new Date(_0x222c8f.sys.sunset * 0x3e8);
-    await _0x8466ad("❄️ Weather in " + _0x2a4b2d + "\n\n🌡️ Temperature: " + _0x29b590 + "°C\n🌡️ Feels Like: " + _0x84bb24 + "°C\n🌡️ Min Temperature: " + _0x4a81f2 + "°C\n🌡️ Max Temperature: " + _0x3e4cba + "°C\n📝 Description: " + _0x4825d2 + "\n❄️ Humidity: " + _0x5d9de8 + "%\n🌀 Wind Speed: " + _0x5d6085 + " m/s\n🌧️ Rain Volume (last hour): " + _0x576d7b + " mm\n☁️ Cloudiness: " + _0x2b2fae + "%\n🌄 Sunrise: " + _0x49cd4e.toLocaleTimeString() + "\n🌅 Sunset: " + _0x2d52fe.toLocaleTimeString() + "\n🌫️ Latitude: " + _0x222c8f.coord.lat + "\n🌪️ Longitude: " + _0x222c8f.coord.lon + "\n\n🗺 Country: " + _0x222c8f.sys.country + "\n\n*°Powered by NEXUS-AI*");
-  } catch (_0x363b1d) {
-    console.error("Error fetching weather data:", _0x363b1d);
-    await _0x8466ad("An error occurred while fetching the weather data. Please try again.");
-  }
+nomCom: "weather",
+aliases: ["forecast","temp"],
+categorie: "Search",
+reaction: "🌤️"
+},
+async (jid, sock, data) => {
+
+const { arg, ms } = data;
+
+const repondre = async(text)=>{
+return sock.sendMessage(jid,{
+text,
+contextInfo:{
+forwardingScore:999,
+isForwarded:true,
+forwardedNewsletterMessageInfo:{
+newsletterJid:"120363288304618280@newsletter",
+newsletterName:"NEXUS-AI",
+serverMessageId:143
+},
+externalAdReply:{
+title:"🌤️ NEXUS-AI WEATHER",
+body:"Weather Information",
+thumbnailUrl:"https://files.catbox.moe/wvyd3v.jpg",
+sourceUrl:"https://github.com/officialpkdiller/NEXUS-AI",
+mediaType:1,
+renderLargerThumbnail:false
+}
+}
+},{quoted:ms});
+};
+
+try{
+
+if(!arg[0]){
+return repondre("❌ Please provide a city name.\nExample: .weather Nairobi");
+}
+
+const city = arg.join(" ");
+
+const geo = await axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
+
+if(!geo.data.results){
+return repondre("❌ City not found.");
+}
+
+const place = geo.data.results[0];
+
+const weather = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current_weather=true`);
+
+const w = weather.data.current_weather;
+
+const message = `🌤️ *Weather for ${place.name}, ${place.country}*
+
+🌡️ Temperature: ${w.temperature}°C
+💨 Wind Speed: ${w.windspeed} km/h
+🧭 Wind Direction: ${w.winddirection}°
+⏰ Time: ${w.time}
+
+Powered by NEXUS-AI`;
+
+await sock.sendMessage(jid,{
+text:message,
+contextInfo:{
+forwardingScore:999,
+isForwarded:true,
+forwardedNewsletterMessageInfo:{
+newsletterJid:"120363288304618280@newsletter",
+newsletterName:"NEXUS-AI",
+serverMessageId:143
+}
+}
+},{quoted:ms});
+
+}catch(err){
+
+console.log("Weather Error:",err);
+
+repondre("❌ Failed to fetch weather data.");
+
+}
+
 });
