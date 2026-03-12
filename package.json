@@ -29,7 +29,7 @@
     "@xct007/tiktok-scraper": "^1.0.2",  
     "@hapi/boom": "^10.0.1",
     "@types/node": "^18.0.6",
-    "@whiskeysockets/baileys": "github:xhclintohn/Baileys",
+    "@whiskeysockets/baileys": "github:FezChat/SocketsBaileys.git",
     "ytdl-core": "npm:@distube/ytdl-core",
     "@bochilteam/scraper": "^4.2.4",
     "@google/generative-ai":"^0.1.3",
@@ -149,8 +149,9 @@
     "wikipedia":"2.1.2",
     "xfarr-api": "^1.0.3",
     "yargs": "^17.3.1",
-    "youtube-yts": "^2.0.0",
-    "yt-search": "^2.12.1",
-    "ytdl-core": "^4.11.5"
+    "youtube-yts": "latest",
+    "yt-search": "latest",
+    "youtubedl-core": "^4.11.7",
+    "ytdl-core": "npm:@distube/ytdl-core"
   }
 }
