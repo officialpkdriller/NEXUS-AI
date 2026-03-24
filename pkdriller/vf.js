@@ -27,7 +27,7 @@ zokou({
     }
 
     // Fetch song data from API
-    const response = await axios.get(`https://api.ootaizumi.web.id/downloader/spotifyplay?query=${encodeURIComponent(searchQuery)}`);
+    const response = await axios.get(`https://api.giftedtech.co.ke/api/download/ytmp4?apikey=gifted&url=?query=${encodeURIComponent(searchQuery)}`);
     const data = response.data.result;
 
     if (!data || !data.download) return repondre(`❌ No song found for "${query}"`);
