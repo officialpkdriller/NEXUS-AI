@@ -35,7 +35,7 @@ module.exports.stick = async (buffer, author) => {
         pack: 'MSELA-CHUI-V2',
         author: author,
         type: StickerTypes.FULL,
-        categories: ['🤩', '🎉'],
+        categories: ['🤩', '💯'],
         id: '12345',
         quality: 50,
         background: '#000000'
