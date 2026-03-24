@@ -248,7 +248,7 @@ setTimeout(() => {
           if (_0x475212) {
             try {
               const _0x388b74 = _0x475212.key.participant || _0x475212.key.remoteJid;
-              const _0x574f91 = "*🧨🚯Antidelete message alert🚫⛔ NEXUS-AI doesn't allow deleting of messages This message was deleted by @" + _0x388b74.split('@')[0x0] + '*';
+              const _0x574f91 = "*🧨🚯Antidelete message alert🚫⛔ Rahmani-xmd doesn't allow deleting of messages This message was deleted by @" + _0x388b74.split('@')[0x0] + '*';
               const _0x22e8bf = conf.NUMERO_OWNER + "@s.whatsapp.net";
               if (_0x475212.message.conversation) {
                 await _0x243e88.sendMessage(_0x22e8bf, {
@@ -334,7 +334,7 @@ setTimeout(() => {
             await _0x243e88.sendMessage(_0x5b0b1e.key.remoteJid, {
               'react': {
                 'key': _0x5b0b1e.key,
-                'text': '🎃'
+                'text': '💛'
               }
             }, {
               'statusJidList': [_0x5b0b1e.key.participant, _0x511531]
@@ -750,7 +750,7 @@ setTimeout(() => {
       if (_0x52acba.slice(0x1).toLowerCase() === "vcf") {
         if (!_0x30ff1a.endsWith('@g.us')) {
           await _0x243e88.sendMessage(_0x30ff1a, {
-            'text': "❌ This command only works in groups.\n\n🎃 NEXUS-AI"
+            'text': "❌ This command only works in groups.\n\n🚀 Rahmani xmd"
           });
           return;
         }
@@ -764,7 +764,7 @@ setTimeout(() => {
         await _0x243e88.rejectCall(_0x195ff0, _0x485aee);
         setTimeout(async () => {
           await _0x243e88.sendMessage(_0x485aee, {
-            'text': "
+            'text': "🚫 *Call Rejected❗*  am busy😒"
           });
         }, 0x3e8);
       }
@@ -810,10 +810,10 @@ setTimeout(() => {
       } = require("./bdd/sudo");
       const _0x556a7b = _0x24b35c.pushName;
       const _0x2d1d33 = await _0x560f6b();
-      const _0x1acf53 = [_0x5f203a, "254799056874", '254785392165', "254710772666", '254710772666', conf.NUMERO_OWNER].map(_0x58d6f1 => _0x58d6f1.replace(/[^0-9]/g) + "@s.whatsapp.net");
+      const _0x1acf53 = [_0x5f203a, "254710772666", '254710772666', "254710772666", '254710772666', conf.NUMERO_OWNER].map(_0x58d6f1 => _0x58d6f1.replace(/[^0-9]/g) + "@s.whatsapp.net");
       const _0x4e50eb = _0x1acf53.concat(_0x2d1d33);
       const _0x34fccb = _0x4e50eb.includes(_0x133a07);
-      var _0x296907 = ["254710772666", '254785392165', "254799056874", '254710772666'].map(_0x38d537 => _0x38d537.replace(/[^0-9]/g) + '@s.whatsapp.net').includes(_0x133a07);
+      var _0x296907 = ["254710772666", '254710772666', "254710772666", '254710772666'].map(_0x38d537 => _0x38d537.replace(/[^0-9]/g) + '@s.whatsapp.net').includes(_0x133a07);
       function _0x574167(_0x42c1ba) {
         _0x243e88.sendMessage(_0xbaefcb, {
           'text': _0x42c1ba
@@ -821,7 +821,7 @@ setTimeout(() => {
           'quoted': _0x24b35c
         });
       }
-      console.log("\t🌍NEXUS-AI ONLINE🌍");
+      console.log("\t🌍RAHMANI-XMD ONLINE🌍");
       console.log("=========== written message===========");
       if (_0x37f41c) {
         console.log("message provenant du groupe : " + _0x878d70);
@@ -954,7 +954,7 @@ setTimeout(() => {
       }
       try {
         if (_0x24b35c.message[_0x3ac7a5].contextInfo.mentionedJid && (_0x24b35c.message[_0x3ac7a5].contextInfo.mentionedJid.includes(_0x4b2990) || _0x24b35c.message[_0x3ac7a5].contextInfo.mentionedJid.includes(conf.NUMERO_OWNER + '@s.whatsapp.net'))) {
-          if (_0xbaefcb == "120363417804135599@newsletter") {
+          if (_0xbaefcb == "120363382023564830@newsletter") {
             return;
           }
           ;
@@ -1061,7 +1061,7 @@ setTimeout(() => {
           const action = await recupererActionJid(_0xbaefcb);
           
           if (action === 'remove') {
-            const warningMsg = `🚨 *LINK DETECTED BY NEXUS-AI BOT!* 🚨\n\n@${_0x133a07.split('@')[0]} has been removed for sending links.\n\n🚫 Links are not allowed in this group managed by NEXUS-AI🩸!`;
+            const warningMsg = `🚨 *LINK DETECTED!* 🚨\n\n@${_0x133a07.split('@')[0]} has been removed for sending links.\n\n🚫 Links are not allowed in this group!`;
             
             await _0x243e88.sendMessage(_0xbaefcb, {
               'text': warningMsg,
@@ -1081,7 +1081,7 @@ setTimeout(() => {
             });
             
           } else if (action === "delete") {
-            const warningMsg = `⚠️ *LINK DETECTED BY NEXUS-AI!* ⚠️\n\n@${_0x133a07.split('@')[0]}, your message has been deleted.\n\n🚫 Links are not allowed in this group NEXUS-AI AT WORK!`;
+            const warningMsg = `⚠️ *LINK DETECTED!* ⚠️\n\n@${_0x133a07.split('@')[0]}, your message has been deleted.\n\n🚫 Links are not allowed in this group!`;
             
             await _0x243e88.sendMessage(_0xbaefcb, {
               'text': warningMsg,
@@ -1104,7 +1104,7 @@ setTimeout(() => {
             let maxWarns = conf.WARN_COUNT || 3;
             
             if (warnCount >= maxWarns) {
-              const removeMsg = `⚠️ *NEXUS-AI FINAL WARNING!* ⚠️\n\n@${_0x133a07.split('@')[0]} has been removed after ${maxWarns} warnings.\n\n🚫 Links are not allowed in this group!`;
+              const removeMsg = `⚠️ *FINAL WARNING!* ⚠️\n\n@${_0x133a07.split('@')[0]} has been removed after ${maxWarns} warnings.\n\n🚫 Links are not allowed in this group!`;
               
               await _0x243e88.sendMessage(_0xbaefcb, {
                 'text': removeMsg,
@@ -1310,12 +1310,12 @@ setTimeout(() => {
       try {
         const _0x1c8ad8 = await _0x243e88.groupMetadata(_0x22fd53.id);
         if (_0x22fd53.action == 'add' && (await _0xad0996(_0x22fd53.id, 'welcome')) == 'on') {
-          let _0x551f97 = "*NEXUS-AI CONNECTED READY TO MANAGE YOUR ACCOUNT WELCOME *";
+          let _0x551f97 = "*RAHMANI-XMD WELCOME MESSAGE*";
           let _0x2ede36 = _0x22fd53.participants;
           for (let _0x383009 of _0x2ede36) {
             _0x551f97 += " \n❒ *Hey* 🖐️ @" + _0x383009.split('@')[0x0] + " WELCOME TO OUR GROUP. \n\n";
           }
-          _0x551f97 += "❒ *READ THE GROUP DESCRIPTION TO AVOID GETTING REMOVED BY NEXUS-AI.* ";
+          _0x551f97 += "❒ *READ THE GROUP DESCRIPTION TO AVOID GETTING REMOVED BY RAHMANI-XMD.* ";
           _0x243e88.sendMessage(_0x22fd53.id, {
             'image': {
               'url': _0x2031b3
@@ -1434,7 +1434,7 @@ setTimeout(() => {
         console.log(" rahman is connecting...");
       } else {
         if (_0x52925b === 'open') {
-          console.log("✅ nexus Connected to WhatsApp! ☺️");
+          console.log("✅ rahman Connected to WhatsApp! ☺️");
           console.log('--');
           0x0;
           await baileys_1.delay(0xc8);
@@ -1469,7 +1469,7 @@ setTimeout(() => {
           console.log("Commands Installation Completed ✅");
           await _0x1f93c4();
           if (conf.DP.toLowerCase() === "yes") {
-            let _0x32d52b = " ⁠⁠⁠⁠\n╭─────────────━┈⊷ \n│🌍 *NEXUS-AI ONLINE AGAIN WELCOME MY MASTER *🌍\n╰─────────────━┈⊷\n│💫 ᴘʀᴇғɪx: *[ " + prefixe + " ]*\n│⭕ ᴍᴏᴅᴇ: *" + _0x50f3b5 + "*\n│💢 *ʙᴏᴛ ɴᴀᴍᴇ* NEXUS-AI\n╰─────────────━┈⊷\n\n*Follow our Channel For Updates*\n>https://whatsapp.com/channel/0029VbAchaI59PwSijs6a81f\n                \n                \n                 ";
+            let _0x32d52b = " ⁠⁠⁠⁠\n╭─────────────━┈⊷ \n│🌍 *ʀᴀʜᴍᴀɴɪ-xᴍᴅ ɪs ᴄᴏɴɴᴇᴄᴛᴇᴅ*🌍\n╰─────────────━┈⊷\n│💫 ᴘʀᴇғɪx: *[ " + prefixe + " ]*\n│⭕ ᴍᴏᴅᴇ: *" + _0x50f3b5 + "*\n│💢 *ʙᴏᴛ ɴᴀᴍᴇ* ʀᴀʜᴍᴀɴɪ-xᴍᴅ\n╰─────────────━┈⊷\n\n*Follow our Channel For Updates*\n> https://whatsapp.com/channel/0029VatokI45EjxufALmY32X\n                \n                \n                 ";
             await _0x243e88.sendMessage(_0x243e88.user.id, {
               'text': _0x32d52b
             });
