@@ -6,72 +6,70 @@ zokou({
   categorie: "Download"
 }, async (dest, zk, commandeOptions) => {
 
-  const { ms, repondre, arg } = commandeOptions;
+  const { arg, repondre, ms } = commandeOptions;
 
-  if (!arg[0]) return repondre("❌ Please provide a song name or Spotify link!");
+  if (!arg[0]) return repondre("🎵 Please provide a song name!");
 
   try {
-    let query = arg.join(" ");
 
-    // Check if the input is a Spotify URL
-    const isSpotifyLink = (url) => url.includes("spotify.com") || url.includes("spotify.link") || url.includes("spoti.fi");
+    const query = arg.join(" ");
 
-    let spotifyUrl = "";
-    let searchQuery = "";
+    // 🔍 Search YouTube
+    const search = await axios.get(`https://apis.davidcyriltech.my.id/youtube/search?query=${encodeURIComponent(query)}`);
+    const results = search.data.result.slice(0, 5);
 
-    if (isSpotifyLink(query)) {
-      spotifyUrl = query;
-      searchQuery = query;
-    } else {
-      searchQuery = query;
-    }
+    if (!results.length) return repondre("❌ No results found!");
 
-    // Fetch song data from API
-    const response = await axios.get(`https://api.giftedtech.co.ke/api/download/ytmp4?apikey=gifted&url=?query=${encodeURIComponent(searchQuery)}`);
-    const data = response.data.result;
-
-    if (!data || !data.download) return repondre(`❌ No song found for "${query}"`);
-
-    const songTitle = data.title || "Unknown Song";
-    const songArtist = data.artists || "Unknown Artist";
-    const duration = data.duration || "00:00";
-    const thumbnail = data.image || "";
-    const downloadUrl = data.download;
-    const externalUrl = data.external_url || spotifyUrl || "";
-
-    // Send fake verified contact as quoted message
-    const vcard = `BEGIN:VCARD
-VERSION:3.0
-FN:NEXUS-AI Bot
-TEL;type=CELL;waid=1234567890:+1234567890
-END:VCARD`;
-
-    // Send audio with context
-    await zk.sendMessage(dest, {
-      audio: { url: downloadUrl },
-      mimetype: "audio/mpeg",
-      ptt: false
-    }, {
-      quoted: {
-        key: { fromMe: false, participant: "0@s.whatsapp.net", id: "fakeid" },
-        message: { contactMessage: { displayName: "✅ Verified", vcard } }
-      }
+    let text = `🎧 *NEXUS-AI MUSIC SEARCH*\n\n`;
+    results.forEach((v, i) => {
+      text += `*${i + 1}.* ${v.title}\n⏱ ${v.duration}\n\n`;
     });
 
-    // Send info message with buttons (optional)
-    await zk.sendMessage(dest, {
-      text: `🎵 *${songTitle}*\n👤 *Artist:* ${songArtist}\n⏱️ *Duration:* ${duration}\n🔗 *Source:* Spotify\n\nSelect download type:`,
-      footer: "Powered by NEXUS-AI",
-      buttons: [
-        { buttonId: `audio_mp3 ${externalUrl || searchQuery}`, buttonText: { displayText: "🎵 MP3 Audio" }, type: 1 },
-        { buttonId: `audio_doc ${externalUrl || searchQuery}`, buttonText: { displayText: "📄 Audio Document" }, type: 1 }
-      ],
-      headerType: 1,
-      image: { url: thumbnail }
+    text += `Reply with number (1-5) to download 🎶`;
+
+    // 📩 Send list
+    const msg = await zk.sendMessage(dest, {
+      text: text
     }, { quoted: ms });
 
-  } catch (error) {
-    console.error("Play command error:", error);
-    repondre(`❌ Failed to download song. Error: ${error.message}`);
+    // 🧠 Wait for reply
+    zk.ev.on("messages.upsert", async ({ messages }) => {
+      const reply = messages[0];
+
+      if (!reply.message) return;
+      if (reply.key.remoteJid !== dest) return;
+      if (!reply.message.conversation && !reply.message.extendedTextMessage) return;
+
+      const body = reply.message.conversation || reply.message.extendedTextMessage.text;
+
+      const choice = parseInt(body);
+
+      if (isNaN(choice) || choice < 1 || choice > 5) return;
+
+      const selected = results[choice - 1];
+
+      await zk.sendMessage(dest, {
+        text: `⏳ Downloading *${selected.title}*...`
+      }, { quoted: reply });
+
+      // 🎵 Download MP3 using Gifted API
+      const apiUrl = `https://api.giftedtech.co.ke/api/download/ytmp3?apikey=gifted&url=${selected.url}`;
+
+      const res = await axios.get(apiUrl);
+      const audioUrl = res.data.result.download_url;
+
+      // 📤 Send Audio
+      await zk.sendMessage(dest, {
+        audio: { url: audioUrl },
+        mimetype: "audio/mpeg",
+        fileName: `${selected.title}.mp3`
+      }, { quoted: reply });
+
+    });
+
+  } catch (e) {
+    console.log(e);
+    repondre("❌ Error occurred while processing your request.");
   }
+
 });
