@@ -51,12 +51,12 @@ zokou({
   }
 
   // Footer
-  let footer = `\n🚀 Powered by *Pkdriller* | 2025💎`;
+  let footer = `\n🚀 Powered by *Pkdriller* | 2026💎`;
 
   try {
     // Send menu image with caption
     await sock.sendMessage(jid, {
-      image: { url: "https://i.postimg.cc/DfxsyWD7/d444fb03-b701-409d-822c-d48b9427eb93.jpg" },
+      image: { url: "https://files.catbox.moe/zfq1oj.jpg" },
       caption: header + body + footer,
       contextInfo: {
         mentionedJid: [sock.user.id],
