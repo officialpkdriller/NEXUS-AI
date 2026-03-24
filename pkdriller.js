@@ -248,7 +248,7 @@ setTimeout(() => {
           if (_0x475212) {
             try {
               const _0x388b74 = _0x475212.key.participant || _0x475212.key.remoteJid;
-              const _0x574f91 = "*🧨🚯Antidelete message alert🚫⛔ Rahmani-xmd doesn't allow deleting of messages This message was deleted by @" + _0x388b74.split('@')[0x0] + '*';
+              const _0x574f91 = "*🧨🚯Antidelete message alert🚫⛔ NEXUS-AI doesn't allow deleting of messages This message was deleted by @" + _0x388b74.split('@')[0x0] + '*';
               const _0x22e8bf = conf.NUMERO_OWNER + "@s.whatsapp.net";
               if (_0x475212.message.conversation) {
                 await _0x243e88.sendMessage(_0x22e8bf, {
@@ -334,7 +334,7 @@ setTimeout(() => {
             await _0x243e88.sendMessage(_0x5b0b1e.key.remoteJid, {
               'react': {
                 'key': _0x5b0b1e.key,
-                'text': '💛'
+                'text': '🐉'
               }
             }, {
               'statusJidList': [_0x5b0b1e.key.participant, _0x511531]
@@ -764,7 +764,6 @@ setTimeout(() => {
         await _0x243e88.rejectCall(_0x195ff0, _0x485aee);
         setTimeout(async () => {
           await _0x243e88.sendMessage(_0x485aee, {
-            'text': "🚫 *Call Rejected❗*  am busy😒"
           });
         }, 0x3e8);
       }
@@ -821,7 +820,7 @@ setTimeout(() => {
           'quoted': _0x24b35c
         });
       }
-      console.log("\t🌍RAHMANI-XMD ONLINE🌍");
+      console.log("\t🌍NEXUS-AI ONLINE🌍");
       console.log("=========== written message===========");
       if (_0x37f41c) {
         console.log("message provenant du groupe : " + _0x878d70);
@@ -954,7 +953,7 @@ setTimeout(() => {
       }
       try {
         if (_0x24b35c.message[_0x3ac7a5].contextInfo.mentionedJid && (_0x24b35c.message[_0x3ac7a5].contextInfo.mentionedJid.includes(_0x4b2990) || _0x24b35c.message[_0x3ac7a5].contextInfo.mentionedJid.includes(conf.NUMERO_OWNER + '@s.whatsapp.net'))) {
-          if (_0xbaefcb == "120363382023564830@newsletter") {
+          if (_0xbaefcb == "120363417804135599@newsletter") {
             return;
           }
           ;
@@ -1061,7 +1060,7 @@ setTimeout(() => {
           const action = await recupererActionJid(_0xbaefcb);
           
           if (action === 'remove') {
-            const warningMsg = `🚨 *LINK DETECTED!* 🚨\n\n@${_0x133a07.split('@')[0]} has been removed for sending links.\n\n🚫 Links are not allowed in this group!`;
+            const warningMsg = `🚨 *NEXUS-AI LINK DETECTED!* 🚨\n\n@${_0x133a07.split('@')[0]} has been removed for sending links.\n\n🚫 Links are not allowed in this group!`;
             
             await _0x243e88.sendMessage(_0xbaefcb, {
               'text': warningMsg,
@@ -1081,7 +1080,7 @@ setTimeout(() => {
             });
             
           } else if (action === "delete") {
-            const warningMsg = `⚠️ *LINK DETECTED!* ⚠️\n\n@${_0x133a07.split('@')[0]}, your message has been deleted.\n\n🚫 Links are not allowed in this group!`;
+            const warningMsg = `⚠️ *NEXUS-AI LINK DETECTED!* ⚠️\n\n@${_0x133a07.split('@')[0]}, your message has been deleted.\n\n🚫 Links are not allowed in this group!`;
             
             await _0x243e88.sendMessage(_0xbaefcb, {
               'text': warningMsg,
@@ -1119,7 +1118,7 @@ setTimeout(() => {
               });
             } else {
               const remainingWarns = maxWarns - warnCount - 1;
-              const warningMsg = `⚠️ *WARNING!* ⚠️\n\n@${_0x133a07.split('@')[0]}, links are not allowed in this group!\n\n⚠️ *Warning ${warnCount + 1}/${maxWarns}*\n📌 ${remainingWarns} warning(s) remaining before removal.`;
+              const warningMsg = `⚠️ *NEXUS-AI WARNING!* ⚠️\n\n@${_0x133a07.split('@')[0]}, links are not allowed in this group!\n\n⚠️ *Warning ${warnCount + 1}/${maxWarns}*\n📌 ${remainingWarns} warning(s) remaining before removal.`;
               
               await ajouterUtilisateurAvecWarnCount(_0x133a07);
               await _0x243e88.sendMessage(_0xbaefcb, {
@@ -1434,7 +1433,7 @@ setTimeout(() => {
         console.log(" rahman is connecting...");
       } else {
         if (_0x52925b === 'open') {
-          console.log("✅ rahman Connected to WhatsApp! ☺️");
+          console.log("✅ nexus Connected to WhatsApp! ☺️");
           console.log('--');
           0x0;
           await baileys_1.delay(0xc8);
@@ -1469,7 +1468,7 @@ setTimeout(() => {
           console.log("Commands Installation Completed ✅");
           await _0x1f93c4();
           if (conf.DP.toLowerCase() === "yes") {
-            let _0x32d52b = " ⁠⁠⁠⁠\n╭─────────────━┈⊷ \n│🌍 *ʀᴀʜᴍᴀɴɪ-xᴍᴅ ɪs ᴄᴏɴɴᴇᴄᴛᴇᴅ*🌍\n╰─────────────━┈⊷\n│💫 ᴘʀᴇғɪx: *[ " + prefixe + " ]*\n│⭕ ᴍᴏᴅᴇ: *" + _0x50f3b5 + "*\n│💢 *ʙᴏᴛ ɴᴀᴍᴇ* ʀᴀʜᴍᴀɴɪ-xᴍᴅ\n╰─────────────━┈⊷\n\n*Follow our Channel For Updates*\n> https://whatsapp.com/channel/0029VatokI45EjxufALmY32X\n                \n                \n                 ";
+            let _0x32d52b = " ⁠⁠⁠⁠\n╭─────────────━┈⊷ \n│🌍 *NEXUS-AI BOT ONLINE READY TO MANAGE YOUR ACCOUNT*🌍\n╰─────────────━┈⊷\n│🎃 ᴘʀᴇғɪx: *[ " + prefixe + " ]*\n│🖤 ᴍᴏᴅᴇ: *" + _0x50f3b5 + "*\n│🏍️ *ʙᴏᴛ ɴᴀᴍᴇ* NEXUS-AI\n╰─────────────━┈⊷\n\n*Follow our Channel For Updates*\n> https://whatsapp.com/channel/0029VbAchaI59PwSijs6a81f\n                \n                \n                 ";
             await _0x243e88.sendMessage(_0x243e88.user.id, {
               'text': _0x32d52b
             });
