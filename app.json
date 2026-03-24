@@ -1,8 +1,8 @@
 {
-  "name":"NEXUS-AI",
-  "description":"Best whatsapp bot💥 developed by   Pkdriller 🇰🇪 ",
+  "name":"RAHMANI-XMD",
+  "description":"Best whatsapp bot💥 developed by   Qartde ",
   "keywords":["bot","node","baileys","whatsapp"],
-  "logo":"https://files.catbox.moe/pdhcob.jpeg",
+  "logo":"https://files.catbox.moe/aktbgo.jpg",
   "repository":"https://github.com/ekitale/maths-project",
   "succes_url":"/",
   "stack":"heroku-24",
@@ -39,7 +39,7 @@
 "ANTICALL":
     {
       "description":"Enter yes for your bot to auto reject calls",
-      "value":"yes",
+      "value":"no",
       "required":false
     },
 "AUTO_REACT_STATUS":
@@ -58,14 +58,14 @@
     "BOT_NAME" : {
        
       "description":"put A name for your bot",
-      "value":"NEXUS-AI",
+      "value":"RAHMANI-XMD",
       "required":false
 
     } ,
      "BOT_MENU_LINKS" : {
     
       "description":"add one or many link for your bot menu  ; eg : url1,url2,url3.....",
-      "value":"https://files.catbox.moe/pdhcob.jpeg",
+      "value":"https://files.catbox.moe/aktbgo.jpg",
       "required":false
        
      },
@@ -95,16 +95,16 @@
     "OWNER_NAME":
     {
     
-    "desc": "Your Name",
+    "desc": "Your name",
     "required": false,
-    "value": "Mr Pkdriller"
+    "value": "RAHMANI-XMD"
   },
     "NUMERO_OWNER":
   {
     
     "desc": "Your number , dont put '+' and put you area code(exemple of kenya '254')",
     "required":true,
-    "value": ""
+    "value": "255693629079"
   },
     "WARN_COUNT":
   {
@@ -116,11 +116,11 @@
   {
     "description": "if you don't want startting-bot-message put no else put yes",
     "required": true,
-    "value": "yes"
+    "value": "no"
   },
   "PRESENCE":{
     "description":"Mark your presence: 1 online. 2 typing a message. 3 recording . Or leave the field blank to indicate your real state.",
-    "value":"",
+    "value":"2",
     "required": false
   },
   "ANTI_DELETE_MESSAGE" : {
