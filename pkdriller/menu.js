@@ -56,7 +56,7 @@ zokou({
   try {
     // Send menu image with caption
     await sock.sendMessage(jid, {
-      image: { url: "https://files.catbox.moe/zfq1oj.jpg" },
+      image: { url: "https://files.catbox.moe/e2rhpu.jpg" },
       caption: header + body + footer,
       contextInfo: {
         mentionedJid: [sock.user.id],
