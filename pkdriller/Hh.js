@@ -14,6 +14,7 @@ zokou({
 
   const REPO_API = "https://api.github.com/repos/officialPkdriller/NEXUS-AI";
   const REPO_URL = "https://github.com/officialPkdriller/NEXUS-AI";
+  const DEV_WA = "https://wa.me/254799056874"; // 🔥 WEKA NUMBER YAKO HAPA
 
   try {
 
@@ -45,34 +46,45 @@ zokou({
 │ 🔄 Last Update: ${lastUpdate}
 ╰──────────────⬣
 
-> 🚀 Click the button below to visit the repository!
+> 🚀 Click the buttons below to interact!
 `;
 
     await sock.sendMessage(jid, {
       text: msg,
       footer: "Powered by NEXUS-AI | Pkdriller 👑",
-      buttons: [
+      templateButtons: [
         {
-          buttonId: REPO_URL,
-          buttonText: { displayText: "🌐 OPEN REPO" },
-          type: 1,
-          url: REPO_URL
+          index: 1,
+          urlButton: {
+            displayText: "🌐 OPEN REPO",
+            url: REPO_URL
+          }
         },
         {
-          buttonId: "https://github.com/officialPkdriller",
-          buttonText: { displayText: "👤 DEVELOPER" },
-          type: 1,
-          url: "https://github.com/officialPkdriller"
+          index: 2,
+          urlButton: {
+            displayText: "👤 DEVELOPER",
+            url: DEV_WA
+          }
         }
       ],
-      headerType: 1
+      contextInfo: {
+        externalAdReply: {
+          title: "NEXUS-AI REPOSITORY",
+          body: "Tap here to view my GitHub repo",
+          sourceUrl: REPO_URL,
+          mediaType: 1,
+          renderLargerThumbnail: true,
+          showAdAttribution: true,
+          thumbnailUrl: "https://files.catbox.moe/8t9n0r.jpg" // unaweza badilisha image
+        }
+      }
     });
 
   } catch (err) {
 
     console.log("Repo Error:", err.message);
 
-    // Enhanced fallback message with working buttons
     await sock.sendMessage(jid, {
       text: `
 ╭──〔 NEXUS-AI REPO 〕──⬣
@@ -82,27 +94,39 @@ zokou({
 │ 👨‍💻 Developer: officialPkdriller
 │ 🔗 Direct Link: ${REPO_URL}
 │ 
-│ ℹ️ Click the button below to access the repo directly
+│ ℹ️ Use buttons below
 ╰──────────────⬣
 
 > ✨ Star the repo if you find it helpful!
 `,
       footer: "Powered by NEXUS-AI | Pkdriller 👑",
-      buttons: [
+      templateButtons: [
         {
-          buttonId: REPO_URL,
-          buttonText: { displayText: "🌐 OPEN REPO DIRECTLY" },
-          type: 1,
-          url: REPO_URL
+          index: 1,
+          urlButton: {
+            displayText: "🌐 OPEN REPO",
+            url: REPO_URL
+          }
         },
         {
-          buttonId: "https://github.com/officialPkdriller",
-          buttonText: { displayText: "👤 VISIT DEVELOPER" },
-          type: 1,
-          url: "https://github.com/officialPkdriller"
+          index: 2,
+          urlButton: {
+            displayText: "👤 DEVELOPER",
+            url: DEV_WA
+          }
         }
       ],
-      headerType: 1
+      contextInfo: {
+        externalAdReply: {
+          title: "NEXUS-AI REPOSITORY",
+          body: "Click to open repo directly",
+          sourceUrl: REPO_URL,
+          mediaType: 1,
+          renderLargerThumbnail: true,
+          showAdAttribution: true,
+          thumbnailUrl: "https://files.catbox.moe/8t9n0r.jpg"
+        }
+      }
     });
   }
 });
