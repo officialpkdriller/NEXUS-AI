@@ -1,4 +1,5 @@
-const { Sticker, createSticker, StickerTypes } = require('wa-sticker-formatter');
+'use strict';
+
 const { zokou } = require("../framework/zokou");
 const { downloadMediaMessage } = require('@whiskeysockets/baileys');
 const fs = require("fs-extra");
@@ -7,21 +8,12 @@ const { Catbox } = require('node-catbox');
 
 const catbox = new Catbox();
 
-async function uploadToCatbox(Path) {
-    if (!fs.existsSync(Path)) {
-        throw new Error("File does not exist");
-    }
-
+async function uploadToCatbox(path) {
+    if (!fs.existsSync(path)) throw new Error("File does not exist");
     try {
-        const response = await catbox.uploadFile({
-            path: Path // Provide the path to the file
-        });
-
-        if (response) {
-            return response; // returns the uploaded file URL
-        } else {
-            throw new Error("Error retrieving the file link");
-        }
+        const response = await catbox.uploadFile({ path });
+        if (response) return response;
+        throw new Error("Error retrieving the file link");
     } catch (err) {
         throw new Error(String(err));
     }
@@ -37,72 +29,57 @@ async function convertToMp3(inputPath, outputPath) {
     });
 }
 
-zokou({ nomCom: "url", categorie: "General", reaction: "💗" }, async (origineMessage, zk, commandeOptions) => {
-    const { msgRepondu, repondre } = commandeOptions;
+zokou({ nomCom: "url", categorie: "General", reaction: "💗" }, async (originMsg, zk, opts) => {
+    const { msgRepondu, repondre } = opts;
 
-    if (!msgRepondu) {
-        repondre('Please reply to an image, video, or audio file.');
-        return;
-    }
+    if (!msgRepondu) return repondre('⚠️ *Please reply to an image, video, or audio file.*');
 
     let mediaPath, mediaType;
 
-    if (msgRepondu.videoMessage) {
-        const videoSize = msgRepondu.videoMessage.fileLength;
-
-        if (videoSize > 50 * 1024 * 1024) {
-            repondre('The video is too long. Please send a smaller video.');
-            return;
-        }
-
-        mediaPath = await zk.downloadAndSaveMediaMessage(msgRepondu.videoMessage);
-        mediaType = 'video';
-    } else if (msgRepondu.imageMessage) {
-        mediaPath = await zk.downloadAndSaveMediaMessage(msgRepondu.imageMessage);
-        mediaType = 'image';
-    } else if (msgRepondu.audioMessage) {
-        mediaPath = await zk.downloadAndSaveMediaMessage(msgRepondu.audioMessage);
-        mediaType = 'audio';
-
-        const outputPath = `${mediaPath}.mp3`;
-
-        try {
-            // Convert audio to MP3 format
-            await convertToMp3(mediaPath, outputPath);
-            fs.unlinkSync(mediaPath); // Remove the original audio file
-            mediaPath = outputPath; // Update the path to the converted MP3 file
-        } catch (error) {
-            console.error("Error converting audio to MP3:", error);
-            repondre('Failed to process the audio file.');
-            return;
-        }
-    } else {
-        repondre('Unsupported media type. Reply with an image, video, or audio file.');
-        return;
-    }
-
     try {
-        const catboxUrl = await uploadToCatbox(mediaPath);
-        fs.unlinkSync(mediaPath); // Remove the local file after uploading
+        if (msgRepondu.videoMessage) {
+            const size = msgRepondu.videoMessage.fileLength;
+            if (size > 50 * 1024 * 1024) return repondre('⚠️ *Video too large! Please send a smaller video.*');
 
-        // Respond with the URL based on media type
-        switch (mediaType) {
-            case 'image':
-                repondre(`Nexus  url: ${catboxUrl}`);
-                break;
-            case 'video':
-                repondre(`Nexus  url: ${catboxUrl}`);
-                break;
-            case 'audio':
-                repondre(`Nexus  url: ${catboxUrl}`);
-                break;
-            default:
-                repondre('An unknown error occurred.');
-                break;
+            mediaPath = await zk.downloadAndSaveMediaMessage(msgRepondu.videoMessage);
+            mediaType = 'Video';
+        } else if (msgRepondu.imageMessage) {
+            mediaPath = await zk.downloadAndSaveMediaMessage(msgRepondu.imageMessage);
+            mediaType = 'Image';
+        } else if (msgRepondu.audioMessage) {
+            mediaPath = await zk.downloadAndSaveMediaMessage(msgRepondu.audioMessage);
+            mediaType = 'Audio';
+
+            const mp3Path = `${mediaPath}.mp3`;
+            await convertToMp3(mediaPath, mp3Path);
+            fs.unlinkSync(mediaPath);
+            mediaPath = mp3Path;
+        } else {
+            return repondre('⚠️ *Unsupported media type. Reply with image, video, or audio.*');
         }
-    } catch (error) {
-        console.error('Error while creating your URL:', error);
-        repondre('Oops, an error occurred.');
+
+        const catboxUrl = await uploadToCatbox(mediaPath);
+        fs.unlinkSync(mediaPath);
+
+        // Smart newsletter style response
+        const msg = `
+📰 *NEXUS URL GENERATOR*
+
+📌 *Type:* ${mediaType}
+🔗 *Your URL:* ${catboxUrl}
+
+✨ *Tips:*
+- Copy & share your link easily
+- Works for images, videos & audio
+- Powered by NEXUS-AI 💖
+
+💬 Reply to any media to generate a new URL instantly!
+`;
+
+        repondre(msg);
+
+    } catch (err) {
+        console.error('Error generating URL:', err);
+        repondre('⚠️ *Oops! Something went wrong while generating your URL.*');
     }
 });
-            
