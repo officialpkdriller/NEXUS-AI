@@ -1,74 +1,73 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", { value: true });
+
 const { zokou } = require("../framework/zokou");
-const moment = require("moment-timezone");
-const s = require("../set");
 
-zokou({ 
-  nomCom: "deployer", 
+zokou({
+  nomCom: "connect",
   categorie: "General",
-  reaction: "👑",
-  desc: "Show bot deployer information"
-}, async (dest, zk, commandeOptions) => {
-  const { repondre, ms, nomAuteurMessage, mybotpic } = commandeOptions;
+  reaction: "🌐",
+  nomFichier: __filename
+}, async (jid, sock, ctx) => {
 
-  // Set timezone and format
-  moment.tz.setDefault('Etc/GMT');
-  const temps = moment().format('HH:mm:ss');
-  const date = moment().format('DD/MM/YYYY');
-
-  // Create information message
-  const infoMsg = `*Hello ${nomAuteurMessage || "User"}!*\n\n` +
-                 `*Deployer Information:*\n` +
-                 `• *Name:* ${s.OWNER_NAME}\n` +
-                 `• *Date:* ${date}\n` +
-                 `• *Time:* ${temps}\n\n` +
-                 `> *Powered by PkDriller*`;
+  const text = `
+╭──〔 CONNECT WITH PKDRILLER 〕──⬣
+│ 🌍 Choose a platform below
+│ 🔗 Click any button to open
+╰──────────────⬣
+`;
 
   try {
-    const mediaUrl = await mybotpic();
-    
-    if (mediaUrl) {
-      // Determine media type and send accordingly
-      if (mediaUrl.match(/\.(mp4|gif)$/i)) {
-        await zk.sendMessage(dest, {
-          video: { url: mediaUrl },
-          caption: infoMsg,
-          gifPlayback: true,
-          contextInfo: {
-            externalAdReply: {
-              title: `NEXUS-AI Deployer`,
-              body: "Premium WhatsApp Bot",
-              thumbnailUrl: mediaUrl,
-              mediaType: 2,
-              mediaUrl: "https://files.catbox.moe/r1j72m.jpeg",
-              sourceUrl: "https://whatsapp.com/channel/0029Vad7YNyJuyA77CtIPX0x"
-            }
+
+    await sock.sendMessage(jid, {
+      text,
+      footer: "Powered by Pkdriller 👑",
+      templateButtons: [
+        {
+          index: 1,
+          urlButton: {
+            displayText: "🐙 GitHub",
+            url: "https://github.com/officialPkdriller"
           }
-        }, { quoted: ms });
-      } 
-      else if (mediaUrl.match(/\.(jpeg|png|jpg)$/i)) {
-        await zk.sendMessage(dest, {
-          image: { url: mediaUrl },
-          caption: infoMsg,
-          contextInfo: {
-            externalAdReply: {
-              title: `Nexus-ai Deployer`,
-              body: "Premium WhatsApp Bot",
-              thumbnailUrl: mediaUrl,
-              mediaType: 1,
-              mediaUrl: "https://files.catbox.moe/pdhcob.jpeg",
-              sourceUrl: "https://whatsapp.com/channel/0029Vad7YNyJuyA77CtIPX0x"
-            }
+        },
+        {
+          index: 2,
+          urlButton: {
+            displayText: "📘 Facebook",
+            url: "https://www.facebook.com/profile.php?id=100091580206517"
           }
-        }, { quoted: ms });
-      } 
-      else {
-        await repondre(infoMsg);
-      }
-    } else {
-      await repondre(infoMsg);
-    }
-  } catch (e) {
-    console.error("Deployer Command Error:", e);
-    await repondre("❌ An error occurred while processing the command");
+        },
+        {
+          index: 3,
+          urlButton: {
+            displayText: "▶️ YouTube",
+            url: "https://www.youtube.com/@Pkdriller"
+          }
+        },
+        {
+          index: 4,
+          urlButton: {
+            displayText: "📸 Instagram",
+            url: "https://www.instagram.com/officialpkdriller?igsh=MTM0Y2p3ZHpxMXZraA=="
+          }
+        },
+        {
+          index: 5,
+          urlButton: {
+            displayText: "💬 Telegram",
+            url: "https://t.me/dev_pkdrillerbot"
+          }
+        }
+      ]
+    });
+
+  } catch (err) {
+    console.log("Connect Error:", err.message);
+
+    await sock.sendMessage(jid, {
+      text: "❌ Failed to open connect menu"
+    });
   }
+
 });
