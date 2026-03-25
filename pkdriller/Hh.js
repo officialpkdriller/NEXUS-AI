@@ -17,7 +17,7 @@ zokou({
 
   const REPO_API = "https://api.github.com/repos/officialPkdriller/NEXUS-AI";
   const REPO_URL = "https://github.com/officialPkdriller/NEXUS-AI";
-  const WHATSAPP_URL = `https://wa.me/${DEVELOPER_NUMBER}`;
+  const WHATSAPP_URL = `https://wa.me/254799056874`;
 
   try {
 
@@ -95,13 +95,13 @@ zokou({
       buttons: [
         {
           buttonId: REPO_URL,
-          buttonText: { displayText: "🌐 OPEN REPO DIRECTLY" },
+          buttonText: { displayText: "🌐 https://github.com/officialPkdriller/NEXUS-AI" },
           type: 1,
-          url: REPO_URL  // Hii itafungua repo kwenye Chrome
+          url: // Hii itafungua repo kwenye Chrome
         },
         {
           buttonId: WHATSAPP_URL,
-          buttonText: { displayText: "👤 CONTACT DEVELOPER" },
+          buttonText: { displayText: "👤 +254799056874CONTACT DEVELOPER" },
           type: 1,
           url: WHATSAPP_URL  // Hii itafungua WhatsApp na namba yako
         }
