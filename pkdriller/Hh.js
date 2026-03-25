@@ -10,14 +10,12 @@ const newsletterContext = {
     forwardingScore: 999,
     isForwarded: true,
     forwardedNewsletterMessageInfo: {
-      newsletterJid: "120363417804135599@newsletter",
+      newsletterJid: "120363288304618280@newsletter",
       newsletterName: "𝐍𝐄𝐗𝐔𝐒-𝐀𝐈",
       serverMessageId: 1
     }
   }
 };
-
-const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 zokou({
   nomCom: "repo",
@@ -35,78 +33,76 @@ zokou({
 
   try {
 
-    // 🔄 FAKE PROGRESS ANIMATION
-    await sock.sendMessage(jid, { text: "🔍 Fetching repository data..." });
-    await delay(800);
-    await sock.sendMessage(jid, { text: "📡 Connecting to GitHub API..." });
-    await delay(800);
-    await sock.sendMessage(jid, { text: "⚙️ Processing data..." });
-    await delay(800);
+    // ✅ SINGLE LOADING MESSAGE
+    await sock.sendMessage(jid, { text: "⏳ Loading repository info..." });
 
-    const { data } = await axios.get(REPO_API, {
-      headers: {
-        "Accept": "application/vnd.github+json",
-        "User-Agent": "NEXUS-AI"
-      },
-      timeout: 10000
-    });
+    // ✅ SAFE AXIOS
+    let data;
+    try {
+      const res = await axios.get(REPO_API, {
+        headers: {
+          "Accept": "application/vnd.github+json",
+          "User-Agent": "NEXUS-AI"
+        },
+        timeout: 5000 // muhimu sana
+      });
+      data = res.data;
+    } catch (e) {
+      data = null;
+    }
 
-    const stars = data.stargazers_count || 0;
-    const forks = data.forks_count || 0;
-    const issues = data.open_issues_count || 0;
-    const watchers = data.watchers_count || 0;
-    const size = data.size || 0;
-    const language = data.language || "Unknown";
-    const license = data.license?.name || "None";
+    // ✅ DEFAULT VALUES (NO CRASH)
+    const stars = data?.stargazers_count || 0;
+    const forks = data?.forks_count || 0;
+    const issues = data?.open_issues_count || 0;
+    const watchers = data?.watchers_count || 0;
+    const size = data?.size || 0;
+    const language = data?.language || "Unknown";
+    const license = data?.license?.name || "None";
 
-    const created = new Date(data.created_at).toLocaleDateString("en-GB");
-    const updated = new Date(data.updated_at).toLocaleString("en-GB");
+    const created = data?.created_at
+      ? new Date(data.created_at).toLocaleDateString("en-GB")
+      : "N/A";
 
-    const owner = data.owner.login;
-    const bio = data.description || "No description";
+    const updated = data?.updated_at
+      ? new Date(data.updated_at).toLocaleString("en-GB")
+      : "N/A";
+
+    const owner = data?.owner?.login || "officialPkdriller";
+    const bio = data?.description || "NEXUS-AI WhatsApp Bot";
 
     const caption = `
 ╭━━━〔 *𝐍𝐄𝐗𝐔𝐒-𝐀𝐈 ʀᴇᴘᴏ* 〕━━━⬣
-┃ 🚀 *ʀᴇᴘᴏ:* 
-┃ ${REPO_URL}
+┃ 🔗 ${REPO_URL}
 ┃
-┃ 👨‍💻 *ᴅᴇᴠᴇʟᴏᴘᴇʀ:* ${owner}
-┃ 🌐 *ᴘʀᴏғɪʟᴇ:* ${PROFILE}
-┃ 🧠 *ʙɪᴏ:* ${bio}
+┃ 👨‍💻 *Developer:* ${owner}
+┃ 🌐 *Profile:* ${PROFILE}
+┃ 🧠 *Bio:* ${bio}
 ┃
-┣━━━〔 *sᴛᴀᴛɪsᴛɪᴄs* 〕━━━⬣
-┃ 🌟 *sᴛᴀʀs:* ${stars}
-┃ 🍴 *ғᴏʀᴋs:* ${forks}
-┃ 👁 *ᴡᴀᴛᴄʜᴇʀs:* ${watchers}
-┃ 🐞 *ɪssᴜᴇs:* ${issues}
+┣━━━〔 *Stats* 〕━━━⬣
+┃ ⭐ Stars: ${stars}
+┃ 🍴 Forks: ${forks}
+┃ 👁 Watchers: ${watchers}
+┃ 🐛 Issues: ${issues}
 ┃
-┣━━━〔 *ᴘʀᴏᴊᴇᴄᴛ ɪɴғᴏ* 〕━━━⬣
-┃ 💻 *ʟᴀɴɢᴜᴀɢᴇ:* ${language}
-┃ 📦 *sɪᴢᴇ:* ${size} KB
-┃ 📜 *ʟɪᴄᴇɴsᴇ:* ${license}
-┃ 📅 *ᴄʀᴇᴀᴛᴇᴅ:* ${created}
-┃ 🔄 *ᴜᴘᴅᴀᴛᴇᴅ:* ${updated}
+┣━━━〔 *Info* 〕━━━⬣
+┃ 💻 Language: ${language}
+┃ 📦 Size: ${size} KB
+┃ 📜 License: ${license}
+┃ 📅 Created: ${created}
+┃ 🔄 Updated: ${updated}
 ┃
-╰━━━〔 *𝐏𝐎𝐖𝐄𝐑𝐄𝐃 𝐁𝐘 𝐏𝐊𝐃𝐑𝐈𝐋𝐋𝐄𝐑 👑* 〕━━━⬣
+╰━━━〔 *Powered by PKDRILLER 👑* 〕━━━⬣
 `;
 
     await sock.sendMessage(jid, {
       image: { url: BANNER },
       caption,
-      footer: "NEXUS-AI • GitHub Repository",
-      buttons: [
-        {
-          buttonId: "repo_open",
-          buttonText: { displayText: "🌐 OPEN REPO" },
-          type: 1
-        }
-      ],
-      headerType: 4,
       contextInfo: {
         ...newsletterContext.contextInfo,
         externalAdReply: {
-          title: "NEXUS-AI REPOSITORY",
-          body: "Click to view full project on GitHub",
+          title: "NEXUS-AI REPO",
+          body: "Tap to open GitHub",
           thumbnailUrl: BANNER,
           sourceUrl: REPO_URL,
           mediaType: 1,
@@ -124,28 +120,11 @@ zokou({
 
   } catch (err) {
 
-    console.log("Repo Error:", err?.message);
+    console.log("Repo Fatal Error:", err?.message);
 
-    const fallback = `
-╭━━━〔 *𝐍𝐄𝐗𝐔𝐒-𝐀𝐈* 〕━━━⬣
-┃ ⚠️ *Live stats unavailable*
-┃
-┃ 🔗 ${REPO_URL}
-┃ 👨‍💻 Developer: officialPkdriller
-╰━━━━━━━━━━━━━━━⬣
-`;
-
+    // ✅ GUARANTEED RESPONSE
     await sock.sendMessage(jid, {
-      image: { url: BANNER },
-      caption: fallback,
-      ...newsletterContext
-    });
-
-    await sock.sendMessage(jid, {
-      audio: { url: AUDIO },
-      mimetype: "audio/mp4",
-      ptt: false,
-      ...newsletterContext
+      text: `⚠️ Failed to fetch repo\n🔗 ${REPO_URL}`
     });
   }
 });
