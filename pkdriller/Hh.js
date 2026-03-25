@@ -5,16 +5,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const { zokou } = require("../framework/zokou");
 const axios = require("axios");
 
+// Namba yako ya WhatsApp katika format ya kimataifa (bila + au spaces)
+const DEVELOPER_NUMBER = "254799056874"; // Badilisha na namba yako halisi
+
 zokou({
   nomCom: "repo",
   categorie: "General",
-  reaction: "📦",
+  reaction: "🐋",
   nomFichier: __filename
 }, async (jid, sock, ctx) => {
 
   const REPO_API = "https://api.github.com/repos/officialPkdriller/NEXUS-AI";
   const REPO_URL = "https://github.com/officialPkdriller/NEXUS-AI";
-  const DEV_WA = "https://wa.me/2547XXXXXXXX"; // Weka number yako hapa
+  const WHATSAPP_URL = `https://wa.me/${DEVELOPER_NUMBER}`;
 
   try {
 
@@ -46,7 +49,7 @@ zokou({
 │ 🔄 Last Update: ${lastUpdate}
 ╰──────────────⬣
 
-> 🚀 Click the buttons below!
+> 🚀 Click the button below to visit the repository!
 `;
 
     await sock.sendMessage(jid, {
@@ -54,33 +57,26 @@ zokou({
       footer: "Powered by NEXUS-AI | Pkdriller 👑",
       buttons: [
         {
+          buttonId: REPO_URL,
           buttonText: { displayText: "🌐 OPEN REPO" },
           type: 1,
-          url: REPO_URL // <-- THIS MAKES IT OPEN CHROME
+          url: REPO_URL  // Hii itafungua link kwenye Chrome
         },
         {
+          buttonId: WHATSAPP_URL,
           buttonText: { displayText: "👤 DEVELOPER" },
           type: 1,
-          url: DEV_WA // <-- THIS MAKES IT OPEN WHATSAPP
+          url: WHATSAPP_URL  // Hii itafungua WhatsApp na namba yako
         }
       ],
-      headerType: 1,
-      contextInfo: {
-        externalAdReply: {
-          title: "NEXUS-AI REPOSITORY",
-          body: "Tap to open my GitHub repo",
-          sourceUrl: REPO_URL,
-          mediaType: 1,
-          renderLargerThumbnail: true,
-          thumbnailUrl: "https://files.catbox.moe/8t9n0r.jpg"
-        }
-      }
+      headerType: 1
     });
 
   } catch (err) {
 
     console.log("Repo Error:", err.message);
 
+    // Enhanced fallback message with working buttons
     await sock.sendMessage(jid, {
       text: `
 ╭──〔 NEXUS-AI REPO 〕──⬣
@@ -90,34 +86,27 @@ zokou({
 │ 👨‍💻 Developer: officialPkdriller
 │ 🔗 Direct Link: ${REPO_URL}
 │ 
-│ ℹ️ Click the buttons below
+│ ℹ️ Click the button below to access the repo directly
 ╰──────────────⬣
+
+> ✨ Star the repo if you find it helpful!
 `,
       footer: "Powered by NEXUS-AI | Pkdriller 👑",
       buttons: [
         {
-          buttonText: { displayText: "🌐 OPEN REPO" },
+          buttonId: REPO_URL,
+          buttonText: { displayText: "🌐 OPEN REPO DIRECTLY" },
           type: 1,
-          url: REPO_URL
+          url: REPO_URL  // Hii itafungua repo kwenye Chrome
         },
         {
-          buttonText: { displayText: "👤 DEVELOPER" },
+          buttonId: WHATSAPP_URL,
+          buttonText: { displayText: "👤 CONTACT DEVELOPER" },
           type: 1,
-          url: DEV_WA
+          url: WHATSAPP_URL  // Hii itafungua WhatsApp na namba yako
         }
       ],
-      headerType: 1,
-      contextInfo: {
-        externalAdReply: {
-          title: "NEXUS-AI REPOSITORY",
-          body: "Click to open repo directly",
-          sourceUrl: REPO_URL,
-          mediaType: 1,
-          renderLargerThumbnail: true,
-          thumbnailUrl: "https://files.catbox.moe/8t9n0r.jpg"
-        }
-      }
+      headerType: 1
     });
-
   }
 });
