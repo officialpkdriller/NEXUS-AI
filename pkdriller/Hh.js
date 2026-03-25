@@ -14,7 +14,7 @@ zokou({
 
   const REPO_API = "https://api.github.com/repos/officialPkdriller/NEXUS-AI";
   const REPO_URL = "https://github.com/officialPkdriller/NEXUS-AI";
-  const DEV_WA = "https://wa.me/254799056874"; // 🔥 WEKA NUMBER YAKO HAPA
+  const DEV_WA = "https://wa.me/2547XXXXXXXX"; // Weka number yako hapa
 
   try {
 
@@ -46,37 +46,33 @@ zokou({
 │ 🔄 Last Update: ${lastUpdate}
 ╰──────────────⬣
 
-> 🚀 Click the buttons below to interact!
+> 🚀 Click the buttons below!
 `;
 
     await sock.sendMessage(jid, {
       text: msg,
       footer: "Powered by NEXUS-AI | Pkdriller 👑",
-      templateButtons: [
+      buttons: [
         {
-          index: 1,
-          urlButton: {
-            displayText: "🌐 OPEN REPO",
-            url: REPO_URL
-          }
+          buttonText: { displayText: "🌐 OPEN REPO" },
+          type: 1,
+          url: REPO_URL // <-- THIS MAKES IT OPEN CHROME
         },
         {
-          index: 2,
-          urlButton: {
-            displayText: "👤 DEVELOPER",
-            url: DEV_WA
-          }
+          buttonText: { displayText: "👤 DEVELOPER" },
+          type: 1,
+          url: DEV_WA // <-- THIS MAKES IT OPEN WHATSAPP
         }
       ],
+      headerType: 1,
       contextInfo: {
         externalAdReply: {
           title: "NEXUS-AI REPOSITORY",
-          body: "Tap here to view my GitHub repo",
+          body: "Tap to open my GitHub repo",
           sourceUrl: REPO_URL,
           mediaType: 1,
           renderLargerThumbnail: true,
-          showAdAttribution: true,
-          thumbnailUrl: "https://files.catbox.moe/8t9n0r.jpg" // unaweza badilisha image
+          thumbnailUrl: "https://files.catbox.moe/8t9n0r.jpg"
         }
       }
     });
@@ -94,28 +90,23 @@ zokou({
 │ 👨‍💻 Developer: officialPkdriller
 │ 🔗 Direct Link: ${REPO_URL}
 │ 
-│ ℹ️ Use buttons below
+│ ℹ️ Click the buttons below
 ╰──────────────⬣
-
-> ✨ Star the repo if you find it helpful!
 `,
       footer: "Powered by NEXUS-AI | Pkdriller 👑",
-      templateButtons: [
+      buttons: [
         {
-          index: 1,
-          urlButton: {
-            displayText: "🌐 OPEN REPO",
-            url: REPO_URL
-          }
+          buttonText: { displayText: "🌐 OPEN REPO" },
+          type: 1,
+          url: REPO_URL
         },
         {
-          index: 2,
-          urlButton: {
-            displayText: "👤 DEVELOPER",
-            url: DEV_WA
-          }
+          buttonText: { displayText: "👤 DEVELOPER" },
+          type: 1,
+          url: DEV_WA
         }
       ],
+      headerType: 1,
       contextInfo: {
         externalAdReply: {
           title: "NEXUS-AI REPOSITORY",
@@ -123,10 +114,10 @@ zokou({
           sourceUrl: REPO_URL,
           mediaType: 1,
           renderLargerThumbnail: true,
-          showAdAttribution: true,
           thumbnailUrl: "https://files.catbox.moe/8t9n0r.jpg"
         }
       }
     });
+
   }
 });
