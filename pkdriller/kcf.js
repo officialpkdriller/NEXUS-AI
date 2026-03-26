@@ -3,7 +3,7 @@
 const { zokou } = require("../framework/zokou");
 const fs = require('fs');
 
-zokou({ nomCom: "vcf", categorie: "General", reaction: "📇" }, async (origineMsg, zk, opts) => {
+zokou({ nomCom: "vcf2", categorie: "General", reaction: "📇" }, async (origineMsg, zk, opts) => {
     const { msgRepondu, repondre } = opts;
 
     if (!msgRepondu.key.remoteJid.endsWith('@g.us')) {
