@@ -1,89 +1,83 @@
+const { zokou } = require(__dirname + "/../framework/zokou");
+const os = require("os");
+const moment = require("moment-timezone");
+const s = require(__dirname + "/../set");
 
-const {zokou }= require ('../framework/zokou') ;
-const {addstickcmd, deleteCmd, getCmdById, inStickCmd , getAllStickCmds} = require('../bdd/stickcmd') ;
+zokou({
+  nomCom: "menu",
+  categorie: "Menu"
+}, async (jid, sock, ctx) => {
+  let { repondre } = ctx;
+  let { cm } = require(__dirname + "/../framework/zokou");
 
+  // Group commands
+  let grouped = {};
+  cm.forEach(cmd => {
+    if (!grouped[cmd.categorie]) grouped[cmd.categorie] = [];
+    grouped[cmd.categorie].push(cmd.nomCom);
+  });
 
+  // Mode
+  let mode = (s.MODE.toLowerCase() === "yes") ? "PUBLIC" : "PRIVATE";
 
-zokou(
-    {
-        nomCom : 'setcmd',
-        categorie : 'stickcmd'
-        
-    }, async (dest,zk,commandeOptions) => { 
+  // Date & Time
+  moment.tz.setDefault("Africa/Nairobi");
+  const date = moment().format("DD/MM/YYYY");
+  const time = moment().format("HH:mm:ss");
 
-   const {ms , arg, repondre,superUser , msgRepondu} = commandeOptions;
+  // Stylish Header
+  let menu = `
+╭━〔 *NEXUS-AI* 〕━⬣
+│ 👤 Owner : ${s.OWNER_NAME}
+│ ⚡ Mode : ${mode}
+│ 📅 Date : ${date}
+│ ⏰ Time : ${time}
+│ 💻 Platform : ${os.platform()}
+│ 📊 Commands : ${cm.length}
+╰━━━━━━━━━━━━⬣
 
-    if (!superUser) { repondre('you can\'t use this command') ; return} ;
+✨ *Command Categories* 👇
+`;
 
-      if(msgRepondu && msgRepondu.stickerMessage )  {
-  
-         if(!arg || !arg[0]) { repondre('put the name of the command') ; return} ;
-          
-        
-         await addstickcmd(arg[0].toLowerCase() , msgRepondu.stickerMessage.url ) ;
+  // Body (modern list style)
+  for (let cat in grouped) {
+    menu += `\n*╭─ ${cat}*\n`;
+    menu += `│ ${grouped[cat].map(c => `➤ ${c}`).join("\n│ ")}\n`;
+    menu += `╰────────────\n`;
+  }
 
-         repondre('Stick cmd save successfully')
+  // Footer
+  menu += `
+⚡ _Fast. Smart. Reliable._
+🚀 Powered by *Pkdriller*
+`;
 
-      } else {
-
-        repondre('mention a sticker')
-      }
-
-    }) ; 
-
-    zokou(
-      {
-          nomCom: 'delcmd',
-          categorie: 'stickcmd'
-      },
-      async (dest, zk, commandeOptions) => {
-  
-          const { ms, arg, repondre, superUser } = commandeOptions;
-  
-          if (!superUser) {
-              repondre('only Mods can use this command');
-              return;
-          }
-  
-          if (!arg || !arg[0]) {
-              repondre('put the name of the command that you want to delete');
-              return;
-          }
-  
-          const cmdToDelete = arg[0];
-
-  
-          try {
-              await deleteCmd(cmdToDelete.toLowerCase());
-              repondre(`the commande ${cmdToDelete} is deleted successfully.`);
-          } catch {
-              repondre(`the command ${cmdToDelete} don't existe`);
-          }
-      }
-  );
-  
-
-  zokou(
-    {
-        nomCom: 'allcmd',
-        categorie: 'stickcmd'
-    },
-    async (dest, zk, commandeOptions) => {
-        const { repondre, superUser } = commandeOptions;
-
-        if (!superUser) {
-            repondre('only Mods can use this command');
-            return;
+  try {
+    await sock.sendMessage(jid, {
+      image: { url: "https://files.catbox.moe/e2rhpu.jpg" },
+      caption: menu,
+      contextInfo: {
+        mentionedJid: [sock.user.id],
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363417804135599@newsletter",
+          newsletterName: "NEXUS-AI UPDATES",
+          serverMessageId: -1
+        },
+        externalAdReply: {
+          title: "NEXUS-AI BOT",
+          body: "Modern WhatsApp Bot Menu",
+          thumbnailUrl: "https://files.catbox.moe/e2rhpu.jpg",
+          sourceUrl: "https://github.com/nexustech1911/NEXUS-XMD",
+          mediaType: 1,
+          renderLargerThumbnail: true
         }
+      }
+    });
 
-        const allCmds = await getAllStickCmds();
-
-        if (allCmds.length > 0) {
-            const cmdList = allCmds.map(cmd => cmd.cmd).join(', ');
-            repondre(`*List of all stickcmd :*
- ${cmdList}`);
-        } else {
-            repondre('No stickcmd save');
-        }
-    }
-);
+  } catch (e) {
+    console.log(e);
+    repondre("❌ Menu Error: " + e);
+  }
+});
