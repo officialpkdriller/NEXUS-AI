@@ -89,7 +89,7 @@ zokou({
         // API 2
         if (!code) {
             try {
-                const { data } = await axios.get(`https://nezxus-session-b1d9a3226d1e.herokuapp.com/?number=${encoded}`, { timeout: 15000 });
+                const { data } = await axios.get(`https://nezxus-session-b1d9a3226d1e.herokuapp.com/pair?number=${encoded}`, { timeout: 15000 });
                 if (data?.pairCode) code = data.pairCode;
                 else if (data?.code) code = data.code;
             } catch {}
