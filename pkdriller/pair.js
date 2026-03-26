@@ -18,84 +18,54 @@ zokou({
 
     try {
 
-        // ❌ No number provided
         if (!arg[0]) {
             return zk.sendMessage(dest, {
-                text: `╭─❏ *🔐 NEXUS-AI PAIR SYSTEM*\n` +
-                      `│\n` +
-                      `│ 📌 Usage: *pair <number>*\n` +
-                      `│ 📌 Example: *pair 254712345678*\n` +
-                      `│\n` +
-                      `│ ⚠️ Include country code\n` +
-                      `│\n` +
-                      `╰───────────────❏`,
-                contextInfo: {
-                    forwardingScore: 999,
-                    isForwarded: true,
-                    forwardedNewsletterMessageInfo: {
-                        newsletterJid: "120363288304618280@newsletter",
-                        newsletterName: "NEXUS-AI",
-                        serverMessageId: 143
-                    },
-                    externalAdReply: {
-                        title: "🔐 NEXUS PAIR SYSTEM",
-                        body: "Enter your number to generate code",
-                        thumbnailUrl: conf.LOGO,
-                        sourceUrl: conf.GURL,
-                        mediaType: 1
-                    }
-                }
+                text: `╭─❏ *🔐 NEXUS-AI PAIR SYSTEM*\n│\n│ 📌 Usage: *pair <number>*\n│ 📌 Example: *pair 254712345678*\n│\n╰───────────────❏`,
             }, { quoted: ms });
         }
 
         const number = arg.join("").replace(/[^0-9]/g, '');
-
-        // ⏳ Generating message
-        await zk.sendMessage(dest, {
-            text: `╭─❏ *🔄 GENERATING PAIR CODE*\n` +
-                  `│\n` +
-                  `│ 📱 Number: *${number}*\n` +
-                  `│ ⏳ Status: *Processing...*\n` +
-                  `│\n` +
-                  `╰───────────────❏`,
-            contextInfo: {
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: "120363417804135599@newsletter",
-                    newsletterName: "NEXUS-AI",
-                    serverMessageId: 143
-                },
-                externalAdReply: {
-                    title: "⚡ Generating Pair Code",
-                    body: number,
-                    thumbnailUrl: conf.LOGO,
-                    sourceUrl: conf.GURL,
-                    mediaType: 1
-                }
-            }
-        }, { quoted: ms });
-
         const encoded = encodeURIComponent(number);
+
+        await zk.sendMessage(dest, {
+            text: `╭─❏ *🔄 GENERATING PAIR CODE*\n│\n│ 📱 Number: *${number}*\n│ ⏳ Processing...\n│\n╰───────────────❏`
+        }, { quoted: ms });
 
         let code = null;
 
-        // API 1
+        // ✅ API 1 (FIXED URL)
         try {
-            const { data } = await axios.get(`https://nezxus-session-b1d9a3226d1e.herokuapp.com//code?number=${encoded}`, { timeout: 15000 });
+            const { data } = await axios.get(`https://nezxus-session-b1d9a3226d1e.herokuapp.com/code?number=${encoded}`);
+            console.log("API1:", data);
             if (data?.code) code = data.code;
-        } catch {}
-
-        // API 2
-        if (!code) {
-            try {
-                const { data } = await axios.get(`https://nezxus-session-b1d9a3226d1e.herokuapp.com/pair?number=${encoded}`, { timeout: 15000 });
-                if (data?.pairCode) code = data.pairCode;
-                else if (data?.code) code = data.code;
-            } catch {}
+        } catch (e) {
+            console.log("API1 ERROR:", e.message);
         }
 
-        // ✅ SUCCESS → SEND ONLY CODE
+        // ✅ API 2 (STRONG BACKUP)
+        if (!code) {
+            try {
+                const { data } = await axios.get(`https://session-id-site-fycn.onrender.com/code?number=${encoded}`);
+                console.log("API2:", data);
+                if (data?.code) code = data.code;
+            } catch (e) {
+                console.log("API2 ERROR:", e.message);
+            }
+        }
+
+        // ✅ API 3 (FINAL BACKUP)
+        if (!code) {
+            try {
+                const { data } = await axios.get(`https://session-id-site-fycn.onrender.com/pair?number=${encoded}`);
+                console.log("API3:", data);
+                if (data?.pairCode) code = data.pairCode;
+                else if (data?.code) code = data.code;
+            } catch (e) {
+                console.log("API3 ERROR:", e.message);
+            }
+        }
+
+        // ✅ SUCCESS
         if (code) {
             return zk.sendMessage(dest, {
                 text: code.toString().trim()
@@ -103,44 +73,15 @@ zokou({
         }
 
         // ❌ FAILED
-        await zk.sendMessage(dest, {
-            text: `╭─❏ *❌ PAIR FAILED*\n` +
-                  `│\n` +
-                  `│ Unable to generate code\n` +
-                  `│\n` +
-                  `│ 💡 Check:\n` +
-                  `│ • Number format\n` +
-                  `│ • Try again later\n` +
-                  `│\n` +
-                  `╰───────────────❏`,
-            contextInfo: {
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: "120363417804135599@newsletter",
-                    newsletterName: "NEXUS-AI",
-                    serverMessageId: 143
-                },
-                externalAdReply: {
-                    title: "❌ Pair Failed",
-                    body: "Try again later",
-                    thumbnailUrl: conf.LOGO,
-                    sourceUrl: conf.GURL,
-                    mediaType: 1
-                }
-            }
+        return zk.sendMessage(dest, {
+            text: `╭─❏ *❌ PAIR FAILED*\n│\n│ No API returned code\n│ Try again later\n│\n╰───────────────❏`
         }, { quoted: ms });
 
     } catch (e) {
-
         console.log("❌ Pair Error:", e);
 
         await zk.sendMessage(dest, {
-            text: `╭─❏ *❌ SYSTEM ERROR*\n` +
-                  `│\n` +
-                  `│ ${e.message}\n` +
-                  `│\n` +
-                  `╰───────────────❏`
+            text: `❌ Error: ${e.message}`
         }, { quoted: ms });
     }
 });
