@@ -84,10 +84,10 @@ If you are the owner, make sure your number is correctly set in set.js`);
 ┃
 ┃ 📌 *Bot will monitor all links*
 ┃
-╰━━━〔 *POWERED BY RAHMANI-XMD* 〕━━━╯
+╰━━━〔 *POWERED BY NEXUS-AI* 〕━━━╯
 
 ⚡ *RAHMANI-XMD*` :
-        `╭━━━〔 *RAHMANI-XMD* 〕━━━╮
+        `╭━━━〔 *ÑEXUS-AI* 〕━━━╮
 ┃
 ┃ 🔗 *ANTI-LINK ACTIVATED*
 ┃
@@ -100,7 +100,7 @@ If you are the owner, make sure your number is correctly set in set.js`);
 ┃
 ┃ 📌 *Bot must be admin* to delete messages
 ┃
-╰━━━〔 *POWERED BY RAHMANI-XMD* 〕━━━╯
+╰━━━〔 *POWERED BY NEXUS-AI* 〕━━━╯
 
 ⚡ *RAHMANI-XMD*`;
       
@@ -108,9 +108,9 @@ If you are the owner, make sure your number is correctly set in set.js`);
         text: replyText,
         contextInfo: {
           externalAdReply: {
-            title: "RAHMANI-XMD",
+            title: "NEXUS-AI",
             body: "🔗 Anti-Link Activated",
-            thumbnailUrl: "https://files.catbox.moe/aktbgo.jpg",
+            thumbnailUrl: "https://files.catbox.moe/e2rhpu.jpg",
             mediaType: 1,
             renderLargerThumbnail: true
           }
@@ -152,7 +152,7 @@ If you are the owner, make sure your number is correctly set in set.js`);
           externalAdReply: {
             title: "NEXUS-AI",
             body: "🔗 Anti-Link Deactivated",
-            thumbnailUrl: "",
+            thumbnailUrl: "https://files.catbox.moe/e2rhpu.jpg",
             mediaType: 1
           }
         }
@@ -204,7 +204,7 @@ Example: \`.antilink action warn\``);
           externalAdReply: {
             title: "NEXUS-AI",
             body: `Action: ${actionDisplay}`,
-            thumbnailUrl: "",
+            thumbnailUrl: "https://files.catbox.moe/e2rhpu.jpg",
             mediaType: 1
           }
         }
