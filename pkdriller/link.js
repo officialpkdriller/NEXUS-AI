@@ -102,7 +102,7 @@ If you are the owner, make sure your number is correctly set in set.js`);
 ┃
 ╰━━━〔 *POWERED BY NEXUS-AI* 〕━━━╯
 
-⚡ *RAHMANI-XMD*`;
+⚡ *NEXUS-AI*`;
       
       return zk.sendMessage(dest, {
         text: replyText,
@@ -144,7 +144,7 @@ If you are the owner, make sure your number is correctly set in set.js`);
 ┃
 ╰━━━〔 *POWERED BY NEXUS-AI* 〕━━━╯
 
-⚡ *RAHMANI-XMD*`;
+⚡ *ÑEXUS-AI*`;
       
       return zk.sendMessage(dest, {
         text: replyText,
@@ -199,7 +199,7 @@ Example: \`.antilink action warn\``);
 ┃
 ╰━━━〔 *POWERED BY Nexus-ai* 〕━━━╯
 
-⚡ *RAHMANI-XMD*`,
+⚡ *NEXUS-AI*`,
         contextInfo: {
           externalAdReply: {
             title: "NEXUS-AI",
