@@ -6,21 +6,19 @@ const fs = require("fs-extra");
 const conf = require("../set");
 const { default: axios } = require('axios');
 
-// Store locked groups
-let lockedGroups = new Map();
 
 zokou({ 
-    nomCom: "lock", 
+    nomCom: "kickall", 
     categorie: 'Group', 
-    reaction: "🔒" 
+    reaction: "👢" 
 }, async (dest, zk, commandeOptions) => {
 
     const { 
         ms, 
         repondre, 
-        arg, 
         verifGroupe, 
         nomGroupe, 
+        infosGroupe, 
         verifAdmin, 
         superUser 
     } = commandeOptions;
@@ -35,77 +33,54 @@ zokou({
         return; 
     }
 
-    let reason = arg && arg.length > 0 ? arg.join(' ') : 'No reason provided';
+    let allMembers = infosGroupe.participants;
+    let botNumber = await zk.user.id.split(':')[0] + '@s.whatsapp.net';
+    let isBotAdmin = infosGroupe.participants.find(member => member.id === botNumber)?.admin;
 
-    lockedGroups.set(dest, {
-        locked: true,
-        reason: reason,
-        lockedBy: superUser ? 'Owner' : 'Admin',
-        lockedAt: new Date()
-    });
+    if (!isBotAdmin && !superUser) {
+        return repondre("❌ I need to be an admin to kick members!");
+    }
 
-    let tag = `  
+    let confirmMsg = await repondre(`⚠️ *CONFIRMATION NEEDED* ⚠️\n\nAre you sure you want to kick all ${allMembers.length} members from ${nomGroupe}?\n\nType *confirm* to proceed or *cancel* to abort.\n\n⏰ You have 30 seconds to respond.`);
+
+    let collected = await zk.waitForMessage(dest, (msg) => {
+        return msg.message?.conversation?.toLowerCase() === 'confirm' || 
+               msg.message?.conversation?.toLowerCase() === 'cancel';
+    }, 30000).catch(() => null);
+
+    if (!collected || collected.message?.conversation?.toLowerCase() === 'cancel') {
+        return repondre("❌ Operation cancelled!");
+    }
+
+    let kicked = 0;
+    let failed = 0;
+
+    for (const member of allMembers) {
+        if (member.admin) continue;
+        if (member.id === botNumber) continue;
+        
+        try {
+            await zk.groupParticipantsUpdate(dest, [member.id], "remove");
+            kicked++;
+        } catch (error) {
+            failed++;
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    let result = `  
 ┌─────────────────
-│ 🔒 *GROUP LOCKED* 🔒
+│ 👢 *KICK ALL COMPLETED* 👢
 │
 │ *Group :* ${nomGroupe}
-│ *Reason :* ${reason}
-│ *Locked by :* ${superUser ? 'Owner' : 'Admin'}
-│ *Time :* ${new Date().toLocaleString()}
 │
-│ ⚠️ Only admins can send messages now!
-│ 💬 Use .unlock to unlock the group
+│ *Results :*
+│   ✅ Successfully kicked : ${kicked}
+│   ❌ Failed to kick : ${failed}
+│   👥 Remaining : ${allMembers.length - kicked - failed}
 └─────────────────`;
 
-    await zk.sendMessage(dest, { text: tag }, { quoted: ms });
-});
+    await zk.sendMessage(dest, { text: result }, { quoted: ms });
 
-zokou({ 
-    nomCom: "unlock", 
-    categorie: 'Group', 
-    reaction: "🔓" 
-}, async (dest, zk, commandeOptions) => {
-
-    const { 
-        ms, 
-        repondre, 
-        verifGroupe, 
-        nomGroupe, 
-        verifAdmin, 
-        superUser 
-    } = commandeOptions;
-
-    if (!verifGroupe) { 
-        repondre(" thís cσmmαnd ís rєsєrvєd fσr grσups"); 
-        return; 
-    }
-
-    if (!verifAdmin && !superUser) { 
-        repondre("cσmmαnd ís rєsєrvєd fσr αdmíns  σnlч"); 
-        return; 
-    }
-
-    if (!lockedGroups.has(dest)) {
-        return repondre("❌ This group is not locked!");
-    }
-
-    let lockInfo = lockedGroups.get(dest);
-    lockedGroups.delete(dest);
-
-    let tag = `  
-┌─────────────────
-│ 🔓 *GROUP UNLOCKED* 🔓
-│
-│ *Group :* ${nomGroupe}
-│ *Unlocked by :* ${superUser ? 'Owner' : 'Admin'}
-│
-│ *Previous Lock Info :*
-│   🔒 Locked by : ${lockInfo.lockedBy}
-│   📅 Locked at : ${lockInfo.lockedAt.toLocaleString()}
-│   📝 Reason : ${lockInfo.reason}
-│
-│ ✅ All members can now send messages
-└─────────────────`;
-
-    await zk.sendMessage(dest, { text: tag }, { quoted: ms });
 });
