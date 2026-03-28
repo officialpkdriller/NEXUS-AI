@@ -1,8 +1,8 @@
 {
-  "name":"RAHMANI-XMD",
-  "description":"Best whatsapp bot💥 developed by   Qartde ",
+  "name":"NEXUS-AI",
+  "description":"Best whatsapp bot💥 developed by   Pkdriller",
   "keywords":["bot","node","baileys","whatsapp"],
-  "logo":"https://files.catbox.moe/aktbgo.jpg",
+  "logo":"https://files.catbox.moe/e2rhpu.jpg",
   "repository":"https://github.com/ekitale/maths-project",
   "succes_url":"/",
   "stack":"heroku-24",
@@ -58,14 +58,14 @@
     "BOT_NAME" : {
        
       "description":"put A name for your bot",
-      "value":"RAHMANI-XMD",
+      "value":"NEXUS-AI",
       "required":false
 
     } ,
      "BOT_MENU_LINKS" : {
     
       "description":"add one or many link for your bot menu  ; eg : url1,url2,url3.....",
-      "value":"https://files.catbox.moe/aktbgo.jpg",
+      "value":"https://files.catbox.moe/e2rhpu.jpg",
       "required":false
        
      },
@@ -97,14 +97,14 @@
     
     "desc": "Your name",
     "required": false,
-    "value": "RAHMANI-XMD"
+    "value": "NEXUS-AI"
   },
     "NUMERO_OWNER":
   {
     
     "desc": "Your number , dont put '+' and put you area code(exemple of kenya '254')",
     "required":true,
-    "value": "255693629079"
+    "value": "254799056874"
   },
     "WARN_COUNT":
   {
