@@ -123,7 +123,7 @@ If you are the owner, make sure your number is correctly set in set.js`);
       await ajouterOuMettreAJourJid(dest, 'non');
       
       const replyText = isNewsletter ?
-        `╭━━━〔 *RAHMANI-XMD* 〕━━━╮
+        `╭━━━〔 *NEXUS-AI* 〕━━━╮
 ┃
 ┃ 🔗 *ANTI-LINK DEACTIVATED*
 ┃
@@ -131,10 +131,10 @@ If you are the owner, make sure your number is correctly set in set.js`);
 ┃
 ┃ 📌 Links are now allowed in this newsletter
 ┃
-╰━━━〔 *POWERED BY RAHMANI-XMD* 〕━━━╯
+╰━━━〔 *POWERED BY NEXUS-AI* 〕━━━╯
 
-⚡ *RAHMANI-XMD*` :
-        `╭━━━〔 *RAHMANI-XMD* 〕━━━╮
+⚡ *NEXUS-AI*` :
+        `╭━━━〔 *NEXUS-AI* 〕━━━╮
 ┃
 ┃ 🔗 *ANTI-LINK DEACTIVATED*
 ┃
@@ -142,7 +142,7 @@ If you are the owner, make sure your number is correctly set in set.js`);
 ┃
 ┃ 📌 Links are now allowed in this group
 ┃
-╰━━━〔 *POWERED BY RAHMANI-XMD* 〕━━━╯
+╰━━━〔 *POWERED BY NEXUS-AI* 〕━━━╯
 
 ⚡ *RAHMANI-XMD*`;
       
@@ -150,9 +150,9 @@ If you are the owner, make sure your number is correctly set in set.js`);
         text: replyText,
         contextInfo: {
           externalAdReply: {
-            title: "RAHMANI-XMD",
+            title: "NEXUS-AI",
             body: "🔗 Anti-Link Deactivated",
-            thumbnailUrl: "https://files.catbox.moe/aktbgo.jpg",
+            thumbnailUrl: "",
             mediaType: 1
           }
         }
@@ -186,7 +186,7 @@ Example: \`.antilink action warn\``);
       await mettreAJourAction(dest, dbAction);
       
       return zk.sendMessage(dest, {
-        text: `╭━━━〔 *RAHMANI-XMD* 〕━━━╮
+        text: `╭━━━〔 *NEXUS-AI* 〕━━━╮
 ┃
 ┃ 🔗 *ACTION UPDATED*
 ┃
@@ -197,14 +197,14 @@ Example: \`.antilink action warn\``);
 ┃
 ┃ 📌 Bot must be admin to delete messages
 ┃
-╰━━━〔 *POWERED BY RAHMANI-XMD* 〕━━━╯
+╰━━━〔 *POWERED BY Nexus-ai* 〕━━━╯
 
 ⚡ *RAHMANI-XMD*`,
         contextInfo: {
           externalAdReply: {
-            title: "RAHMANI-XMD",
+            title: "NEXUS-AI",
             body: `Action: ${actionDisplay}`,
-            thumbnailUrl: "https://files.catbox.moe/aktbgo.jpg",
+            thumbnailUrl: "",
             mediaType: 1
           }
         }
@@ -284,7 +284,7 @@ or reply to user's message with \`.antilink reset\``);
       const locationType = isNewsletter ? "NEWSLETTER" : "GROUP";
       
       return zk.sendMessage(dest, {
-        text: `╭━━━〔 *RAHMANI-XMD* 〕━━━╮
+        text: `╭━━━〔 *NEXUS-AI* 〕━━━╮
 ┃
 ┃ ${statusEmoji} *ANTI-LINK SETTINGS* (${locationType})
 ┃
@@ -315,9 +315,9 @@ or reply to user's message with \`.antilink reset\``);
 ┃
 ┃ ⚠️ *Bot must be admin to delete messages!*
 ┃
-╰━━━〔 *POWERED BY RAHMANI-XMD* 〕━━━╯
+╰━━━〔 *POWERED BY pkdriller* 〕━━━╯
 
-⚡ *RAHMANI-XMD*`
+⚡ *ÑEXUS-AI*`
       }, { quoted: ms });
     }
     
