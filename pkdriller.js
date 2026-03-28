@@ -1110,111 +1110,112 @@ setTimeout(() => {
         }
       } catch (_0x14e2ce) {}
       
-      // ============= ANTI-LINK HANDLER =============
+      // ============= FIXED ANTI-LINK HANDLER =============
       try {
+        // Check if anti-link is enabled for this chat
         const isAntiLinkEnabled = await verifierEtatJid(_0xbaefcb);
         
-        let hasLink = false;
-        if (_0xf697f8) {
-          hasLink = _0xf697f8.includes("https://") || 
-                     _0xf697f8.includes("http://") || 
-                     _0xf697f8.includes("www.") ||
-                     _0xf697f8.includes(".com") ||
-                     _0xf697f8.includes(".net") ||
-                     _0xf697f8.includes(".org") ||
-                     _0xf697f8.includes("wa.me") ||
-                     _0xf697f8.includes("chat.whatsapp.com") ||
-                     _0xf697f8.includes("t.me") ||
-                     _0xf697f8.includes("bit.ly") ||
-                     _0xf697f8.includes("tinyurl.com") ||
-                     _0xf697f8.includes("youtube.com") ||
-                     _0xf697f8.includes("youtu.be") ||
-                     _0xf697f8.includes("instagram.com") ||
-                     _0xf697f8.includes("facebook.com") ||
-                     _0xf697f8.includes("twitter.com");
-        }
-        
-        if (hasLink && _0x37f41c && isAntiLinkEnabled) {
-          console.log("🔗 LINK DETECTED in group:", _0xbaefcb);
-          
-          var _0xe4de2e = _0x37f41c ? _0x11ea71.includes(_0x4b2990) : false;
-          
-          if (_0x34fccb || _0x62654f || !_0xe4de2e) {
-            console.log("Skipping: admin/owner or bot not admin");
-            return;
+        // Only check for links if anti-link is enabled AND it's a group
+        if (isAntiLinkEnabled && _0x37f41c) {
+          // Get message text from various possible sources
+          let messageText = '';
+          if (_0xf697f8) {
+            messageText = _0xf697f8;
+          } else if (_0x3ac7a5 === 'imageMessage' && _0x24b35c.message.imageMessage?.caption) {
+            messageText = _0x24b35c.message.imageMessage.caption;
+          } else if (_0x3ac7a5 === 'videoMessage' && _0x24b35c.message.videoMessage?.caption) {
+            messageText = _0x24b35c.message.videoMessage.caption;
+          } else if (_0x3ac7a5 === 'documentMessage' && _0x24b35c.message.documentMessage?.caption) {
+            messageText = _0x24b35c.message.documentMessage.caption;
           }
           
-          const messageToDelete = {
-            'remoteJid': _0xbaefcb,
-            'fromMe': false,
-            'id': _0x24b35c.key.id,
-            'participant': _0x133a07
-          };
+          // Check for links in the message
+          let hasLink = false;
+          if (messageText) {
+            const lowerText = messageText.toLowerCase();
+            hasLink = lowerText.includes('https://') || 
+                       lowerText.includes('http://') || 
+                       lowerText.includes('www.') ||
+                       lowerText.includes('.com') ||
+                       lowerText.includes('.net') ||
+                       lowerText.includes('.org') ||
+                       lowerText.includes('wa.me') ||
+                       lowerText.includes('chat.whatsapp.com') ||
+                       lowerText.includes('t.me') ||
+                       lowerText.includes('bit.ly') ||
+                       lowerText.includes('tinyurl.com') ||
+                       lowerText.includes('youtube.com') ||
+                       lowerText.includes('youtu.be') ||
+                       lowerText.includes('instagram.com') ||
+                       lowerText.includes('facebook.com') ||
+                       lowerText.includes('twitter.com') ||
+                       lowerText.includes('x.com') ||
+                       lowerText.includes('whatsapp.com');
+          }
           
-          const action = await recupererActionJid(_0xbaefcb);
-          
-          if (action === 'remove') {
-            const warningMsg = `🚨 *NEXUS-AI LINK DETECTED!* 🚨\n\n@${_0x133a07.split('@')[0]} has been removed for sending links.\n\n🚫 Links are not allowed in this group!`;
+          if (hasLink) {
+            console.log("🔗 LINK DETECTED in group:", _0xbaefcb, "by:", _0x133a07);
             
-            await _0x243e88.sendMessage(_0xbaefcb, {
-              'text': warningMsg,
-              'mentions': [_0x133a07]
-            }, {
-              'quoted': _0x24b35c
-            });
+            // Check if bot is admin
+            const isBotAdmin = _0x7d8980;
             
-            try {
-              await _0x243e88.groupParticipantsUpdate(_0xbaefcb, [_0x133a07], "remove");
-            } catch (error) {
-              console.log("Anti-link removal error:", error);
+            // Skip if user is admin or superuser
+            const isAdmin = _0x62654f;
+            const isSuperUser = _0x34fccb;
+            
+            // If user is admin or superuser, allow links
+            if (isAdmin || isSuperUser) {
+              console.log("Admin/SuperUser sent link, ignoring...");
+              return;
             }
             
-            await _0x243e88.sendMessage(_0xbaefcb, {
-              'delete': messageToDelete
-            });
+            // If bot is not admin and action requires admin, just warn
+            if (!isBotAdmin) {
+              await _0x243e88.sendMessage(_0xbaefcb, {
+                'text': `⚠️ *NEXUS-AI WARNING* ⚠️\n\n@${_0x133a07.split('@')[0]}, links are not allowed in this group!\n\n🤖 *Bot is not admin* - Cannot delete messages or remove users. Please make bot admin for full anti-link protection.`,
+                'mentions': [_0x133a07]
+              }, {
+                'quoted': _0x24b35c
+              });
+              return;
+            }
             
-          } else if (action === "delete") {
-            const warningMsg = `⚠️ *NEXUS-AI LINK DETECTED!* ⚠️\n\n@${_0x133a07.split('@')[0]}, your message has been deleted.\n\n🚫 Links are not allowed in this group!`;
+            // Get the action from database
+            const action = await recupererActionJid(_0xbaefcb);
             
-            await _0x243e88.sendMessage(_0xbaefcb, {
-              'text': warningMsg,
-              'mentions': [_0x133a07]
-            }, {
-              'quoted': _0x24b35c
-            });
+            // Create message object for deletion
+            const messageToDelete = {
+              'remoteJid': _0xbaefcb,
+              'fromMe': false,
+              'id': _0x24b35c.key.id,
+              'participant': _0x133a07
+            };
             
-            await _0x243e88.sendMessage(_0xbaefcb, {
-              'delete': messageToDelete
-            });
-            
-          } else if (action === 'warn') {
-            const {
-              getWarnCountByJID,
-              ajouterUtilisateurAvecWarnCount
-            } = require("./bdd/warn");
-            
-            let warnCount = await getWarnCountByJID(_0x133a07);
-            let maxWarns = conf.WARN_COUNT || 3;
-            
-            if (warnCount >= maxWarns) {
-              const removeMsg = `⚠️ *FINAL WARNING!* ⚠️\n\n@${_0x133a07.split('@')[0]} has been removed after ${maxWarns} warnings.\n\n🚫 Links are not allowed in this group!`;
+            // Handle based on action
+            if (action === 'remove') {
+              const warningMsg = `🚨 *NEXUS-AI LINK DETECTED!* 🚨\n\n@${_0x133a07.split('@')[0]} has been removed for sending links.\n\n🚫 Links are not allowed in this group!`;
               
               await _0x243e88.sendMessage(_0xbaefcb, {
-                'text': removeMsg,
+                'text': warningMsg,
                 'mentions': [_0x133a07]
               }, {
                 'quoted': _0x24b35c
               });
               
-              await _0x243e88.groupParticipantsUpdate(_0xbaefcb, [_0x133a07], "remove");
+              try {
+                await _0x243e88.groupParticipantsUpdate(_0xbaefcb, [_0x133a07], "remove");
+                console.log(`Removed user ${_0x133a07} for sending link`);
+              } catch (error) {
+                console.log("Anti-link removal error:", error);
+              }
+              
               await _0x243e88.sendMessage(_0xbaefcb, {
                 'delete': messageToDelete
               });
-            } else {
-              const remainingWarns = maxWarns - warnCount - 1;
-              const warningMsg = `⚠️ *NEXUS-AI WARNING!* ⚠️\n\n@${_0x133a07.split('@')[0]}, links are not allowed in this group!\n\n⚠️ *Warning ${warnCount + 1}/${maxWarns}*\n📌 ${remainingWarns} warning(s) remaining before removal.`;
               
-              await ajouterUtilisateurAvecWarnCount(_0x133a07);
+            } else if (action === "delete" || action === "supp") {
+              const warningMsg = `⚠️ *NEXUS-AI LINK DETECTED!* ⚠️\n\n@${_0x133a07.split('@')[0]}, your message has been deleted.\n\n🚫 Links are not allowed in this group!`;
+              
               await _0x243e88.sendMessage(_0xbaefcb, {
                 'text': warningMsg,
                 'mentions': [_0x133a07]
@@ -1225,6 +1226,65 @@ setTimeout(() => {
               await _0x243e88.sendMessage(_0xbaefcb, {
                 'delete': messageToDelete
               });
+              console.log(`Deleted link message from ${_0x133a07}`);
+              
+            } else if (action === 'warn') {
+              try {
+                const {
+                  getWarnCountByJID,
+                  ajouterUtilisateurAvecWarnCount
+                } = require("./bdd/warn");
+                
+                let warnCount = await getWarnCountByJID(_0x133a07);
+                let maxWarns = conf.WARN_COUNT || 3;
+                
+                console.log(`User ${_0x133a07} has ${warnCount}/${maxWarns} warnings`);
+                
+                if (warnCount >= maxWarns) {
+                  const removeMsg = `⚠️ *FINAL WARNING!* ⚠️\n\n@${_0x133a07.split('@')[0]} has been removed after ${maxWarns} warnings for sending links.\n\n🚫 Links are not allowed in this group!`;
+                  
+                  await _0x243e88.sendMessage(_0xbaefcb, {
+                    'text': removeMsg,
+                    'mentions': [_0x133a07]
+                  }, {
+                    'quoted': _0x24b35c
+                  });
+                  
+                  await _0x243e88.groupParticipantsUpdate(_0xbaefcb, [_0x133a07], "remove");
+                  await _0x243e88.sendMessage(_0xbaefcb, {
+                    'delete': messageToDelete
+                  });
+                  console.log(`Removed user ${_0x133a07} after ${maxWarns} warnings`);
+                } else {
+                  const remainingWarns = maxWarns - warnCount - 1;
+                  const warningMsg = `⚠️ *NEXUS-AI WARNING!* ⚠️\n\n@${_0x133a07.split('@')[0]}, links are not allowed in this group!\n\n⚠️ *Warning ${warnCount + 1}/${maxWarns}*\n📌 ${remainingWarns} warning(s) remaining before removal.`;
+                  
+                  await ajouterUtilisateurAvecWarnCount(_0x133a07);
+                  await _0x243e88.sendMessage(_0xbaefcb, {
+                    'text': warningMsg,
+                    'mentions': [_0x133a07]
+                  }, {
+                    'quoted': _0x24b35c
+                  });
+                  
+                  await _0x243e88.sendMessage(_0xbaefcb, {
+                    'delete': messageToDelete
+                  });
+                  console.log(`Warned user ${_0x133a07} (${warnCount + 1}/${maxWarns}) for link`);
+                }
+              } catch (warnError) {
+                console.log("Warning system error:", warnError);
+                // Fallback to delete if warn system fails
+                await _0x243e88.sendMessage(_0xbaefcb, {
+                  'text': `⚠️ *NEXUS-AI LINK DETECTED!* ⚠️\n\n@${_0x133a07.split('@')[0]}, your message has been deleted.\n\n🚫 Links are not allowed in this group!`,
+                  'mentions': [_0x133a07]
+                }, {
+                  'quoted': _0x24b35c
+                });
+                await _0x243e88.sendMessage(_0xbaefcb, {
+                  'delete': messageToDelete
+                });
+              }
             }
           }
         }
