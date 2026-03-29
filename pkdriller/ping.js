@@ -33,7 +33,7 @@ zokou({ nomCom: "ping", categorie: "General" }, async (dest, zk, commandeOptions
         forwardingScore: 999,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-          newsletterJid: "120363288304618280@newsletter",
+          newsletterJid: "120363417804135599@newsletter",
           newsletterName: "NEXUS-AI",
           serverMessageId: 143
         },
