@@ -47,7 +47,7 @@ try{
 
 await repondre("🤖 Thinking...");
 
-const api = `https://api.deline.web.id/ai/openai?text=${encodeURIComponent(question)}&prompt=You+are+a+very+polite+and+intelligent+AI`;
+const api = `https://bmb-api.zone.id/api/chatgpt?text=${encodeURIComponent(question)}&prompt=You+are+a+very+polite+and+intelligent+AI`;
 
 const res = await axios.get(api);
 
