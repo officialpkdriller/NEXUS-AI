@@ -1,85 +1,180 @@
-'use strict';
-
 const { zokou } = require("../framework/zokou");
-const { downloadMediaMessage } = require('@whiskeysockets/baileys');
+const pkg = require("@whiskeysockets/baileys");
+const { generateWAMessageFromContent, proto } = pkg;
+const axios = require("axios");
+const FormData = require('form-data');
 const fs = require("fs-extra");
-const ffmpeg = require("fluent-ffmpeg");
-const { Catbox } = require('node-catbox');
+const path = require("path");
 
-const catbox = new Catbox();
+const BMB_API = 'https://url.bmbxmd.workers.dev/api/upload';
 
-async function uploadToCatbox(path) {
-    if (!fs.existsSync(path)) throw new Error("File does not exist");
-    try {
-        const response = await catbox.uploadFile({ path });
-        if (response) return response;
-        throw new Error("Error retrieving the file link");
-    } catch (err) {
-        throw new Error(String(err));
+// Function to generate random 6 characters (A-Z, 0-9)
+function generateShortId(length = 6) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+    return result;
 }
 
-async function convertToMp3(inputPath, outputPath) {
-    return new Promise((resolve, reject) => {
-        ffmpeg(inputPath)
-            .toFormat("mp3")
-            .on("error", (err) => reject(err))
-            .on("end", () => resolve(outputPath))
-            .save(outputPath);
+zokou({
+  nomCom: "url",
+  categorie: "General",
+  reaction: "🖇",
+  desc: "Convert media to BMB URL"
+}, async (dest, zk, commandeOptions) => {
+  const { repondre, msgRepondu, ms } = commandeOptions;
+
+  try {
+    // Check if replying to media
+    const imageMessage = msgRepondu?.imageMessage || ms.message?.imageMessage;
+    const videoMessage = msgRepondu?.videoMessage || ms.message?.videoMessage;
+    const audioMessage = msgRepondu?.audioMessage || ms.message?.audioMessage;
+    const documentMessage = msgRepondu?.documentMessage || ms.message?.documentMessage;
+
+    const mediaMessage = imageMessage || videoMessage || audioMessage || documentMessage;
+
+    if (!mediaMessage) {
+      return repondre("❌ Please reply to an image, video, or audio file.\n\nExample: .url (reply to media)");
+    }
+
+    // Send initial reaction
+    await zk.sendMessage(dest, {
+      react: { text: "⏳", key: ms.key }
     });
-}
 
-zokou({ nomCom: "url", categorie: "General", reaction: "💗" }, async (originMsg, zk, opts) => {
-    const { msgRepondu, repondre } = opts;
+    // Get mime type
+    let mimeType = mediaMessage.mimetype || '';
+    let mediaBuffer;
 
-    if (!msgRepondu) return repondre('⚠️ *Please reply to an image, video, or audio file.*');
-
-    let mediaPath, mediaType;
-
+    // Download media
     try {
-        if (msgRepondu.videoMessage) {
-            const size = msgRepondu.videoMessage.fileLength;
-            if (size > 50 * 1024 * 1024) return repondre('⚠️ *Video too large! Please send a smaller video.*');
-
-            mediaPath = await zk.downloadAndSaveMediaMessage(msgRepondu.videoMessage);
-            mediaType = 'Video';
-        } else if (msgRepondu.imageMessage) {
-            mediaPath = await zk.downloadAndSaveMediaMessage(msgRepondu.imageMessage);
-            mediaType = 'Image';
-        } else if (msgRepondu.audioMessage) {
-            mediaPath = await zk.downloadAndSaveMediaMessage(msgRepondu.audioMessage);
-            mediaType = 'Audio';
-
-            const mp3Path = `${mediaPath}.mp3`;
-            await convertToMp3(mediaPath, mp3Path);
-            fs.unlinkSync(mediaPath);
-            mediaPath = mp3Path;
-        } else {
-            return repondre('⚠️ *Unsupported media type. Reply with image, video, or audio.*');
-        }
-
-        const catboxUrl = await uploadToCatbox(mediaPath);
-        fs.unlinkSync(mediaPath);
-
-        // Smart newsletter style response
-        const msg = `
-📰 *NEXUS URL GENERATOR*
-
-📌 *Type:* ${mediaType}
-🔗 *Your URL:* ${catboxUrl}
-
-✨ *Tips:*
-- Copy & share your link easily
-- Works for images, videos & audio
-- Powered by NEXUS-AI 💖
-
-💬 Reply to any media to generate a new URL instantly!
-`;
-
-        repondre(msg);
-
-    } catch (err) {
-        console.error('Error generating URL:', err);
-        repondre('⚠️ *Oops! Something went wrong while generating your URL.*');
+      mediaBuffer = await zk.downloadAndSaveMediaMessage(mediaMessage);
+    } catch (error) {
+      return repondre("❌ Failed to download media. Please try again.");
     }
+
+    // Check file size (100MB limit)
+    const stats = fs.statSync(mediaBuffer);
+    if (stats.size > 100 * 1024 * 1024) {
+      fs.unlinkSync(mediaBuffer);
+      return repondre("❌ File size exceeds 100MB limit.");
+    }
+
+    // Determine extension
+    let extension = '';
+    if (mimeType.includes('image/jpeg')) extension = '.jpg';
+    else if (mimeType.includes('image/png')) extension = '.png';
+    else if (mimeType.includes('image/webp')) extension = '.webp';
+    else if (mimeType.includes('image/gif')) extension = '.gif';
+    else if (mimeType.includes('video')) extension = '.mp4';
+    else if (mimeType.includes('audio')) extension = '.mp3';
+    else if (mimeType.includes('application')) extension = '.pdf';
+    else extension = '.bin';
+
+    // Generate filename: 6 random chars + extension
+    const shortId = generateShortId(6);
+    const filename = `${shortId}${extension}`;
+
+    // Upload to BMB API
+    const form = new FormData();
+    form.append('file', fs.createReadStream(mediaBuffer), {
+      filename: filename,
+      contentType: mimeType
+    });
+
+    const response = await axios.post(BMB_API, form, {
+      headers: form.getHeaders(),
+      timeout: 60000
+    });
+
+    // Clean up temp file
+    fs.unlinkSync(mediaBuffer);
+
+    const data = response.data;
+    if (!data || !data.url) {
+      throw new Error("Upload failed. BMB did not return a valid URL.");
+    }
+
+    const mediaUrl = data.url;
+
+    // Determine media type
+    let mediaType = 'File';
+    if (mimeType.includes('image')) mediaType = 'Image';
+    else if (mimeType.includes('video')) mediaType = 'Video';
+    else if (mimeType.includes('audio')) mediaType = 'Audio';
+
+    const fileSizeMB = (stats.size / (1024 * 1024)).toFixed(2);
+
+    // Build response text
+    const textMessage = `📤 *FILE UPLOAD SUCCESS*
+━━━━━━━━━━━━━━━━
+📁 *Type:* ${mediaType}
+📦 *Size:* ${fileSizeMB} MB
+🔑 *ID:* ${shortId}
+🌐 *Link:* ${mediaUrl}
+━━━━━━━━━━━━━━━━
+©pk`;
+
+    // Create buttons
+    const buttons = [
+      {
+        name: "cta_copy",
+        buttonParamsJson: JSON.stringify({
+          display_text: "📋 COPY LINK",
+          copy_code: mediaUrl
+        })
+      }
+    ];
+
+    // Send interactive message with buttons
+    const viewOnceMessage = {
+      viewOnceMessage: {
+        message: {
+          messageContextInfo: {
+            deviceListMetadata: {},
+            deviceListMetadataVersion: 2
+          },
+          interactiveMessage:
+            proto.Message.InteractiveMessage.create({
+              body: proto.Message.InteractiveMessage.Body.create({
+                text: textMessage
+              }),
+              footer: proto.Message.InteractiveMessage.Footer.create({
+                text: "© NEXUS-AI"
+              }),
+              header: proto.Message.InteractiveMessage.Header.create({
+                title: "",
+                subtitle: "",
+                hasMediaAttachment: false
+              }),
+              nativeFlowMessage:
+                proto.Message.InteractiveMessage.NativeFlowMessage.create({
+                  buttons
+                })
+            })
+        }
+      }
+    };
+
+    const waMsg = generateWAMessageFromContent(
+      dest,
+      viewOnceMessage,
+      {}
+    );
+
+    await zk.relayMessage(dest, waMsg.message, {
+      messageId: waMsg.key.id
+    });
+
+    // React with success
+    await zk.sendMessage(dest, {
+      react: { text: "✅", key: ms.key }
+    });
+
+  } catch (error) {
+    console.error("URL Upload Error:", error);
+    await repondre(`❌ Error: ${error.message || error}`);
+  }
 });
