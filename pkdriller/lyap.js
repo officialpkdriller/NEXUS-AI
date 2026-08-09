@@ -1,194 +1,64 @@
+const ytdl = require("ytdl-core");
+const fs = require("fs");
+const path = require("path");
 
-const { zokou } = require("../framework/zokou");
-const axios = require("axios");
-const yts = require("yt-search");
-
-const BASE_URL = "https://api-red-iota-56.vercel.app";
-const BOT_NAME = "NEXUS-AI";
-const DEVELOPER = "pkdriller";
-
-// === Command: .play (Audio Play - send as voice) ===
-zokou({
-  nomCom: "play",
-  aliases: ["music", "audio", "mziki"],
-  reaction: "🎵",
-  categorie: "Download"
-}, async (dest, zk, commandeOptions) => {
-  const { repondre, arg, ms } = commandeOptions;
-  const query = arg.join(" ");
-
-  try {
-    if (!query) {
-      await zk.sendMessage(dest, {
-        text: "🎵 *NEXUS-AI*\n\n_🎧 Enter song name_\n\n📌 _.play nikuone_"
-      }, { quoted: ms });
-      return;
+module.exports = {
+  name: "play",
+  description: "Download and send audio from YouTube",
+  execute: async (client, message, args) => {
+    if (!args[0]) {
+      return message.reply("❌ Please provide a valid YouTube link!");
     }
 
-    await zk.sendMessage(dest, {
-      text: `🔍 *${query}*\n⏳ _Processing..._`
-    }, { quoted: ms });
+    const url = args[0];
 
-    const search = await yts(query);
-    const video = search.videos[0];
-    
-    if (!video) {
-      return await zk.sendMessage(dest, {
-        text: "❌ _No results_\n\n🎵 *NEXUS-AI*"
-      }, { quoted: ms });
+    // Check if the URL is valid
+    if (!ytdl.validateURL(url)) {
+      return message.reply("⚠️ Invalid YouTube link. Please check and try again.");
     }
-
-    await zk.sendMessage(dest, {
-      text: `🎵 *${video.title}*\n⏱️ ${video.timestamp} | 👁️ ${video.views.toLocaleString()}\n📺 ${video.author.name}\n🔗 ${video.url}\n\n⏳ _Downloading..._`
-    }, { quoted: ms });
 
     try {
-      const apiURL = `${BASE_URL}/dipto/ytDl3?link=${video.videoId}&format=mp3`;
-      const response = await axios.get(apiURL, { timeout: 60000 });
-      
-      let downloadLink = response.data?.downloadLink || response.data?.download || response.data?.url;
-      
-      if (downloadLink) {
-        await zk.sendMessage(dest, {
-          audio: { url: downloadLink },
-          mimetype: "audio/mp4",
-          fileName: `${video.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp3`
-        }, { quoted: ms });
-      }
-    } catch (downloadErr) {
-      console.log("Download error:", downloadErr.message);
-    }
+      // Notify the user that download is starting
+      const replyMessage = await message.reply("⏳ Downloading audio, please wait...");
 
-  } catch (error) {
-    console.error("Music error:", error);
-    
-    await zk.sendMessage(dest, {
-      text: `❌ _Error_\n\n🎵 *NEXUS-AI*`
-    }, { quoted: ms });
+      // Set file path
+      const outputPath = path.resolve(__dirname, `../temp/audio-${Date.now()}.mp4`);
+
+      // Start downloading audio
+      const stream = ytdl(url, { filter: "audioonly", quality: "highestaudio" });
+      const writeStream = fs.createWriteStream(outputPath);
+
+      stream.pipe(writeStream);
+
+      // Track download progress
+      stream.on("progress", (chunkLength, downloaded, total) => {
+        const percent = ((downloaded / total) * 100).toFixed(2);
+        console.log(`Downloading... ${percent}%`);
+      });
+
+      // When download completes
+      writeStream.on("finish", async () => {
+        console.log("Download finished.");
+
+        // Send the audio file
+        await client.sendMessage(message.chat, { audio: fs.readFileSync(outputPath), mimetype: "audio/mp4" });
+
+        // Clean up temporary file
+        fs.unlinkSync(outputPath);
+
+        // Edit the original reply to indicate completion
+        await client.sendMessage(message.chat, "✅ Download complete! Here's your audio... *powered by KYPHER*");
+      });
+
+      // Handle errors during download
+      stream.on("error", (error) => {
+        console.error("Error during download:", error);
+        message.reply("❌ Failed to download audio. Please try again.");
+      });
+
+    } catch (error) {
+      console.error("Error executing play command:", error);
+      message.reply("❌ An error occurred while processing your request.");
+    }
   }
-});
-
-
-// === Command: .song (Audio as Document) ===
-zokou({
-  nomCom: "song",
-  aliases: ["mp3", "audiofile"],
-  reaction: "🎶",
-  categorie: "Download"
-}, async (dest, zk, commandeOptions) => {
-  const { repondre, arg, ms } = commandeOptions;
-  const query = arg.join(" ");
-
-  try {
-    if (!query) {
-      await zk.sendMessage(dest, {
-        text: "🎶 *NEXUS-AI*\n\n_🎧 Enter song name_\n\n📌 _.song nikuone_"
-      }, { quoted: ms });
-      return;
-    }
-
-    await zk.sendMessage(dest, {
-      text: `🔍 *${query}*\n⏳ _Processing..._`
-    }, { quoted: ms });
-
-    const search = await yts(query);
-    const video = search.videos[0];
-    
-    if (!video) {
-      return await zk.sendMessage(dest, {
-        text: "❌ _No results_\n\n🎶 *NEXUS-AI*"
-      }, { quoted: ms });
-    }
-
-    await zk.sendMessage(dest, {
-      text: `🎶 *${video.title}*\n⏱️ ${video.timestamp} | 👁️ ${video.views.toLocaleString()}\n📺 ${video.author.name}\n🔗 ${video.url}\n\n⏳ _Downloading..._`
-    }, { quoted: ms });
-
-    try {
-      const apiURL = `${BASE_URL}/dipto/ytDl3?link=${video.videoId}&format=mp3`;
-      const response = await axios.get(apiURL, { timeout: 60000 });
-      
-      let downloadLink = response.data?.downloadLink || response.data?.download || response.data?.url;
-      
-      if (downloadLink) {
-        await zk.sendMessage(dest, {
-          document: { url: downloadLink },
-          mimetype: "audio/mpeg",
-          fileName: `${video.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp3`
-        }, { quoted: ms });
-      }
-    } catch (downloadErr) {
-      console.log("Download error:", downloadErr.message);
-    }
-
-  } catch (error) {
-    console.error("Song error:", error);
-    
-    await zk.sendMessage(dest, {
-      text: `❌ _Error_\n\n🎶 *NEXUS-AI*`
-    }, { quoted: ms });
-  }
-});
-
-
-// === Command: .video (YouTube Video MP4) ===
-zokou({
-  nomCom: "video",
-  aliases: ["vid", "mp4"],
-  reaction: "🎥",
-  categorie: "Download"
-}, async (dest, zk, commandeOptions) => {
-  const { repondre, arg, ms } = commandeOptions;
-  const query = arg.join(" ");
-
-  try {
-    if (!query) {
-      await zk.sendMessage(dest, {
-        text: "🎥 *NEXUS-AI*\n\n_🎬 Enter video name_\n\n📌 _.video nikuone_"
-      }, { quoted: ms });
-      return;
-    }
-
-    await zk.sendMessage(dest, {
-      text: `🔍 *${query}*\n⏳ _Processing..._`
-    }, { quoted: ms });
-
-    const search = await yts(query);
-    const video = search.videos[0];
-    
-    if (!video) {
-      return await zk.sendMessage(dest, {
-        text: "❌ _No results_\n\n🎥 *NEXUS-AI*"
-      }, { quoted: ms });
-    }
-
-    await zk.sendMessage(dest, {
-      text: `🎥 *${video.title}*\n⏱️ ${video.timestamp} | 👁️ ${video.views.toLocaleString()}\n📺 ${video.author.name}\n🔗 ${video.url}\n\n⏳ _Downloading..._`
-    }, { quoted: ms });
-
-    try {
-      const apiURL = `${BASE_URL}/dipto/ytDl3?link=${video.videoId}&format=mp4`;
-      const response = await axios.get(apiURL, { timeout: 60000 });
-      
-      let downloadLink = response.data?.downloadLink || response.data?.download || response.data?.url;
-      
-      if (downloadLink) {
-        await zk.sendMessage(dest, {
-          video: { url: downloadLink },
-          mimetype: "video/mp4",
-          fileName: `${video.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`,
-          caption: `🎥 *NEXUS-AI*`
-        }, { quoted: ms });
-      }
-    } catch (downloadErr) {
-      console.log("Video download error:", downloadErr.message);
-    }
-
-  } catch (error) {
-    console.error("Video error:", error);
-    
-    await zk.sendMessage(dest, {
-      text: `❌ _Error_\n\n🎥 *NEXUS-AI*`
-    }, { quoted: ms });
-  }
-});
+};
