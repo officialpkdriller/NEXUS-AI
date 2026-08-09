@@ -1,758 +1,252 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```js
 const { zokou } = require("../framework/zokou");
 const axios = require("axios");
 const yts = require("yt-search");
 
 const BASE_URL = "https://noobs-api.top";
-const NEWSLETTER_JID = "120363417804135599@newsletter";
-const BOT_NAME = "NEXUS-AI";
-const DEVELOPER = "pkdriller";
 
-// === Command: .play (Audio Play - send as voice) ===
-zokou({
-  nomCom: "play",
-  aliases: ["music", "audio", "mziki"],
-  reaction: "🎵",
-  categorie: "Download"
-}, async (dest, zk, commandeOptions) => {
-  const { repondre, arg, ms } = commandeOptions;
-  const query = arg.join(" ");
+zokou(
+  {
+    nomCom: "play",
+    aliases: ["music", "audio", "mziki"],
+    reaction: "🎵",
+    categorie: "Download"
+  },
+  async (dest, zk, commandeOptions) => {
+    const { repondre, arg, ms } = commandeOptions;
+    const query = arg.join(" ").trim();
 
-  try {
+    // ==============================
+    // HELP / EMPTY QUERY
+    // ==============================
     if (!query) {
-      await zk.sendMessage(dest, {
-        text: "🎵 *NEXUS-AI*\n\n_🎧 Enter song name_\n\n📌 _.play nikuone_",
-        contextInfo: {
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterJid: NEWSLETTER_JID,
-            newsletterName: "NEXUS-AI",
-            serverMessageId: 143
-          },
-          forwardingScore: 999
-        }
-      }, { quoted: ms });
-      return;
+      return repondre(
+        "🎵 *NEXUS-AI MUSIC*\n\n" +
+        "Please enter a song name.\n\n" +
+        "📌 Example:\n" +
+        "`.play nikuone`"
+      );
     }
-
-    await zk.sendMessage(dest, {
-      text: `🔍 *${query}*\n⏳ _Processing..._`,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: NEWSLETTER_JID,
-          newsletterName: "NEXUS-AI",
-          serverMessageId: 143
-        },
-        forwardingScore: 999
-      }
-    }, { quoted: ms });
-
-    const search = await yts(query);
-    const video = search.videos[0];
-    
-    if (!video) {
-      return await zk.sendMessage(dest, {
-        text: "❌ _No results_\n\n🎵 *NEXUS-AI*",
-        contextInfo: {
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterJid: NEWSLETTER_JID,
-            newsletterName: "NEXUS-AI",
-            serverMessageId: 143
-          },
-          forwardingScore: 999
-        }
-      }, { quoted: ms });
-    }
-
-    await zk.sendMessage(dest, {
-      text: `🎵 *${video.title}*\n⏱️ ${video.timestamp} | 👁️ ${video.views.toLocaleString()}\n📺 ${video.author.name}\n🔗 ${video.url}\n\n⏳ _Downloading..._`,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: NEWSLETTER_JID,
-          newsletterName: "NEXUS-AI",
-          serverMessageId: 143
-        },
-        forwardingScore: 999
-      }
-    }, { quoted: ms });
 
     try {
-      const apiURL = `${BASE_URL}/dipto/ytDl3?link=${video.videoId}&format=mp3`;
-      const response = await axios.get(apiURL, { timeout: 60000 });
-      
-      let downloadLink = response.data?.downloadLink || response.data?.download || response.data?.url;
-      
-      if (downloadLink) {
-        await zk.sendMessage(dest, {
-          audio: { url: downloadLink },
-          mimetype: "audio/mp4",
-          fileName: `${video.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp3`,
-          contextInfo: {
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterJid: NEWSLETTER_JID,
-              newsletterName: "NEXUS-AI",
-              serverMessageId: 143
-            },
-            forwardingScore: 999
-          }
-        }, { quoted: ms });
-      }
-    } catch (downloadErr) {
-      console.log("Download error:", downloadErr.message);
-    }
-
-  } catch (error) {
-    console.error("Music error:", error);
-    
-    await zk.sendMessage(dest, {
-      text: `❌ _Error_\n\n🎵 *NEXUS-AI*`,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: NEWSLETTER_JID,
-          newsletterName: "NEXUS-AI",
-          serverMessageId: 143
+      // ==============================
+      // SEARCH YOUTUBE
+      // ==============================
+      await zk.sendMessage(
+        dest,
+        {
+          text: `🔎 Searching for *${query}*...\n\n⏳ Please wait...`
         },
-        forwardingScore: 999
+        { quoted: ms }
+      );
+
+      const search = await yts(query);
+
+      if (!search || !search.videos || !search.videos.length) {
+        return repondre(
+          `❌ No results found for *${query}*.\n\n🎵 Try another song name.`
+        );
       }
-    }, { quoted: ms });
-  }
-});
 
-// === Command: .song (Audio as Document) ===
-zokou({
-  nomCom: "song",
-  aliases: ["mp3", "audiofile"],
-  reaction: "🎶",
-  categorie: "Download"
-}, async (dest, zk, commandeOptions) => {
-  const { repondre, arg, ms } = commandeOptions;
-  const query = arg.join(" ");
+      const video = search.videos[0];
 
-  try {
-    if (!query) {
-      await zk.sendMessage(dest, {
-        text: "🎶 *NEXUS-AI*\n\n_🎧 Enter song name_\n\n📌 _.song nikuone_",
-        contextInfo: {
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterJid: NEWSLETTER_JID,
-            newsletterName: "NEXUS-AI",
-            serverMessageId: 143
-          },
-          forwardingScore: 999
+      if (!video.videoId) {
+        return repondre("❌ Unable to get the YouTube video ID.");
+      }
+
+      // ==============================
+      // SONG INFORMATION
+      // ==============================
+      const title = video.title || "Unknown Song";
+      const duration = video.timestamp || "Unknown";
+      const views = video.views
+        ? Number(video.views).toLocaleString()
+        : "Unknown";
+      const author = video.author?.name || "Unknown Artist";
+
+      await zk.sendMessage(
+        dest,
+        {
+          text:
+            `🎵 *${title}*\n\n` +
+            `👤 Artist: ${author}\n` +
+            `⏱️ Duration: ${duration}\n` +
+            `👁️ Views: ${views}\n\n` +
+            `⬇️ Downloading audio...`
+        },
+        { quoted: ms }
+      );
+
+      // ==============================
+      // DOWNLOAD FROM API
+      // ==============================
+      const apiURL =
+        `${BASE_URL}/dipto/ytDl3` +
+        `?link=${encodeURIComponent(video.videoId)}` +
+        `&format=mp3`;
+
+      console.log("PLAY API:", apiURL);
+
+      const response = await axios.get(apiURL, {
+        timeout: 90000,
+        responseType: "arraybuffer",
+        validateStatus: () => true
+      });
+
+      // ==============================
+      // CHECK HTTP STATUS
+      // ==============================
+      if (response.status < 200 || response.status >= 300) {
+        console.error(
+          "Play API HTTP error:",
+          response.status,
+          response.data?.toString?.()
+        );
+
+        return repondre(
+          `❌ Download server returned HTTP ${response.status}.\n\n` +
+          `Please try again later.`
+        );
+      }
+
+      const contentType =
+        response.headers["content-type"] || "";
+
+      let audioBuffer = null;
+
+      // ==============================
+      // CASE 1:
+      // API RETURNS DIRECT AUDIO
+      // ==============================
+      if (
+        contentType.includes("audio") ||
+        contentType.includes("mpeg") ||
+        contentType.includes("octet-stream")
+      ) {
+        audioBuffer = Buffer.from(response.data);
+      }
+
+      // ==============================
+      // CASE 2:
+      // API RETURNS JSON
+      // ==============================
+      if (!audioBuffer) {
+        let data;
+
+        try {
+          const rawData = Buffer.from(response.data).toString("utf8");
+          data = JSON.parse(rawData);
+        } catch (jsonError) {
+          console.error(
+            "Could not parse API response:",
+            jsonError.message
+          );
+
+          return repondre(
+            "❌ The music server returned an invalid response."
+          );
         }
-      }, { quoted: ms });
-      return;
-    }
 
-    await zk.sendMessage(dest, {
-      text: `🔍 *${query}*\n⏳ _Processing..._`,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: NEWSLETTER_JID,
-          newsletterName: "NEXUS-AI",
-          serverMessageId: 143
-        },
-        forwardingScore: 999
-      }
-    }, { quoted: ms });
+        const downloadLink =
+          data?.downloadLink ||
+          data?.download ||
+          data?.url ||
+          data?.data?.downloadLink ||
+          data?.data?.download ||
+          data?.data?.url;
 
-    const search = await yts(query);
-    const video = search.videos[0];
-    
-    if (!video) {
-      return await zk.sendMessage(dest, {
-        text: "❌ _No results_\n\n🎶 *NEXUS-AI*",
-        contextInfo: {
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterJid: NEWSLETTER_JID,
-            newsletterName: "NEXUS-AI",
-            serverMessageId: 143
-          },
-          forwardingScore: 999
+        if (!downloadLink) {
+          console.error(
+            "No download URL found in API response:",
+            data
+          );
+
+          return repondre(
+            "❌ Music download link was not returned by the server.\n\n" +
+            "🔄 Please try again."
+          );
         }
-      }, { quoted: ms });
-    }
 
-    await zk.sendMessage(dest, {
-      text: `🎶 *${video.title}*\n⏱️ ${video.timestamp} | 👁️ ${video.views.toLocaleString()}\n📺 ${video.author.name}\n🔗 ${video.url}\n\n⏳ _Downloading..._`,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: NEWSLETTER_JID,
-          newsletterName: "NEXUS-AI",
-          serverMessageId: 143
-        },
-        forwardingScore: 999
+        // ==============================
+        // DOWNLOAD ACTUAL AUDIO
+        // ==============================
+        const audioResponse = await axios.get(downloadLink, {
+          timeout: 90000,
+          responseType: "arraybuffer",
+          validateStatus: () => true
+        });
+
+        if (
+          audioResponse.status < 200 ||
+          audioResponse.status >= 300
+        ) {
+          return repondre(
+            `❌ Failed to fetch the audio file (HTTP ${audioResponse.status}).`
+          );
+        }
+
+        audioBuffer = Buffer.from(audioResponse.data);
       }
-    }, { quoted: ms });
 
-    try {
-      const apiURL = `${BASE_URL}/dipto/ytDl3?link=${video.videoId}&format=mp3`;
-      const response = await axios.get(apiURL, { timeout: 60000 });
-      
-      let downloadLink = response.data?.downloadLink || response.data?.download || response.data?.url;
-      
-      if (downloadLink) {
-        await zk.sendMessage(dest, {
-          document: { url: downloadLink },
+      // ==============================
+      // CHECK FILE SIZE
+      // ==============================
+      if (!audioBuffer || !audioBuffer.length) {
+        return repondre(
+          "❌ The downloaded audio file is empty."
+        );
+      }
+
+      console.log(
+        `Audio downloaded successfully: ${(
+          audioBuffer.length /
+          1024 /
+          1024
+        ).toFixed(2)} MB`
+      );
+
+      // ==============================
+      // SEND AUDIO
+      // ==============================
+      const safeTitle = title
+        .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .substring(0, 100);
+
+      await zk.sendMessage(
+        dest,
+        {
+          audio: audioBuffer,
           mimetype: "audio/mpeg",
-          fileName: `${video.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp3`,
-          contextInfo: {
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterJid: NEWSLETTER_JID,
-              newsletterName: "NEXUS-AI",
-              serverMessageId: 143
-            },
-            forwardingScore: 999
-          }
-        }, { quoted: ms });
-      }
-    } catch (downloadErr) {
-      console.log("Download error:", downloadErr.message);
-    }
-
-  } catch (error) {
-    console.error("Song error:", error);
-    
-    await zk.sendMessage(dest, {
-      text: `❌ _Error_\n\n🎶 *NEXUS-AI*`,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: NEWSLETTER_JID,
-          newsletterName: "NEXUS-AI",
-          serverMessageId: 143
+          fileName: `${safeTitle || "NEXUS-AI"}.mp3`,
+          ptt: false
         },
-        forwardingScore: 999
+        { quoted: ms }
+      );
+
+      console.log(`PLAY SUCCESS: ${title}`);
+
+    } catch (error) {
+      console.error("PLAY COMMAND ERROR:", error);
+
+      let message = "❌ Failed to download the song.";
+
+      if (error.code === "ECONNABORTED") {
+        message =
+          "⏱️ The download server took too long to respond.\n\n" +
+          "Please try again.";
+      } else if (error.response) {
+        message =
+          `❌ Download server error: HTTP ${error.response.status}`;
+      } else if (error.message) {
+        console.error("Error message:", error.message);
       }
-    }, { quoted: ms });
+
+      return repondre(
+        `${message}\n\n🎵 *NEXUS-AI*`
+      );
+    }
   }
-});
-
-// === Command: .video (YouTube Video MP4) ===
-zokou({
-  nomCom: "video",
-  aliases: ["vid", "mp4"],
-  reaction: "🎥",
-  categorie: "Download"
-}, async (dest, zk, commandeOptions) => {
-  const { repondre, arg, ms } = commandeOptions;
-  const query = arg.join(" ");
-
-  try {
-    if (!query) {
-      await zk.sendMessage(dest, {
-        text: "🎥 *NEXUS-AI*\n\n_🎬 Enter video name_\n\n📌 _.video nikuone_",
-        contextInfo: {
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterJid: NEWSLETTER_JID,
-            newsletterName: "NEXUS-AI",
-            serverMessageId: 143
-          },
-          forwardingScore: 999
-        }
-      }, { quoted: ms });
-      return;
-    }
-
-    await zk.sendMessage(dest, {
-      text: `🔍 *${query}*\n⏳ _Processing..._`,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: NEWSLETTER_JID,
-          newsletterName: "NEXUS-AI",
-          serverMessageId: 143
-        },
-        forwardingScore: 999
-      }
-    }, { quoted: ms });
-
-    const search = await yts(query);
-    const video = search.videos[0];
-    
-    if (!video) {
-      return await zk.sendMessage(dest, {
-        text: "❌ _No results_\n\n🎥 *NEXUS-AI*",
-        contextInfo: {
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterJid: NEWSLETTER_JID,
-            newsletterName: "NEXUS-AI",
-            serverMessageId: 143
-          },
-          forwardingScore: 999
-        }
-      }, { quoted: ms });
-    }
-
-    await zk.sendMessage(dest, {
-      text: `🎥 *${video.title}*\n⏱️ ${video.timestamp} | 👁️ ${video.views.toLocaleString()}\n📺 ${video.author.name}\n🔗 ${video.url}\n\n⏳ _Downloading..._`,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: NEWSLETTER_JID,
-          newsletterName: "NEXUS-AI",
-          serverMessageId: 143
-        },
-        forwardingScore: 999
-      }
-    }, { quoted: ms });
-
-    try {
-      const apiURL = `${BASE_URL}/dipto/ytDl3?link=${video.videoId}&format=mp4`;
-      const response = await axios.get(apiURL, { timeout: 60000 });
-      
-      let downloadLink = response.data?.downloadLink || response.data?.download || response.data?.url;
-      
-      if (downloadLink) {
-        await zk.sendMessage(dest, {
-          video: { url: downloadLink },
-          mimetype: "video/mp4",
-          fileName: `${video.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp4`,
-          caption: `🎥 *NEXUS-AI*`,
-          contextInfo: {
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterJid: NEWSLETTER_JID,
-              newsletterName: "NEXUS-AI",
-              serverMessageId: 143
-            },
-            forwardingScore: 999
-          }
-        }, { quoted: ms });
-      }
-    } catch (downloadErr) {
-      console.log("Video download error:", downloadErr.message);
-    }
-
-  } catch (error) {
-    console.error("Video error:", error);
-    
-    await zk.sendMessage(dest, {
-      text: `❌ _Error_\n\n🎥 *NEXUS-AI*`,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: NEWSLETTER_JID,
-          newsletterName: "NEXUS-AI",
-          serverMessageId: 143
-        },
-        forwardingScore: 999
-      }
-    }, { quoted: ms });
-  }
-});
+);
+```
