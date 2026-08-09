@@ -3,7 +3,7 @@ const { zokou } = require("../framework/zokou");
 const axios = require("axios");
 const yts = require("yt-search");
 
-const BASE_URL = "https://noobs-api.top";
+const BASE_URL = "https://api-red-iota-56.vercel.app";
 const BOT_NAME = "NEXUS-AI";
 const DEVELOPER = "pkdriller";
 
