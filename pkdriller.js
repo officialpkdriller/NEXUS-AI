@@ -226,7 +226,7 @@ setInterval(() => {
 }, 3600000);
 // ============= END STORE CLEANUP =============
 
-// ============= FIXED DECODE JID FUNCTION =============
+// ============= DECODE JID FUNCTION =============
 function decodeJid(jid) {
   if (!jid) return jid;
   if (/:\d+@/gi.test(jid)) {
@@ -237,7 +237,7 @@ function decodeJid(jid) {
   }
 }
 
-// ============= NEW: GROUP WELCOME STYLED MESSAGE =============
+// ============= GROUP WELCOME STYLED MESSAGE =============
 async function sendStyledWelcome(sock, groupId, participants, groupMetadata) {
   try {
     let welcomeMsg = `╔══════════════════════╗\n`;
@@ -282,7 +282,7 @@ async function sendStyledWelcome(sock, groupId, participants, groupMetadata) {
   }
 }
 
-// ============= NEW: GROUP GOODBYE STYLED MESSAGE =============
+// ============= GROUP GOODBYE STYLED MESSAGE =============
 async function sendStyledGoodbye(sock, groupId, participants, groupMetadata) {
   try {
     let goodbyeMsg = `╔══════════════════════╗\n`;
@@ -313,222 +313,7 @@ async function sendStyledGoodbye(sock, groupId, participants, groupMetadata) {
   }
 }
 
-// ============= FIXED: ANTI-DELETE WITH ALL MEDIA TYPES =============
-async function sendStyledAntiDelete(sock, ownerJid, deletedMsg, sender, sockInstance) {
-  try {
-    const senderName = sender.split('@')[0];
-    let msg = `╔══════════════════════════╗\n`;
-    msg += `  🚫 *ANTI-DELETE ALERT* 🚫\n`;
-    msg += `╚══════════════════════════╝\n\n`;
-    msg += `👤 *User:* @${senderName}\n`;
-    msg += `⏰ *Time:* ${new Date().toLocaleString()}\n\n`;
-    msg += `📝 *Deleted Message:*\n`;
-    msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-    
-    // Check for conversation (text)
-    if (deletedMsg.message.conversation) {
-      msg += `💬 ${deletedMsg.message.conversation}\n`;
-      await sock.sendMessage(ownerJid, {
-        'text': msg,
-        'mentions': [sender]
-      });
-      return;
-    }
-    
-    // Check for extended text message
-    if (deletedMsg.message.extendedTextMessage) {
-      const text = deletedMsg.message.extendedTextMessage.text || '';
-      msg += `💬 ${text}\n`;
-      await sock.sendMessage(ownerJid, {
-        'text': msg,
-        'mentions': [sender]
-      });
-      return;
-    }
-    
-    // IMAGE MESSAGE
-    if (deletedMsg.message.imageMessage) {
-      msg += `🖼️ *Image Deleted*\n`;
-      msg += `📝 Caption: ${deletedMsg.message.imageMessage.caption || 'No caption'}\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-      msg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
-      
-      try {
-        // Download the image
-        const imageBuffer = await sockInstance.downloadMediaMessage(deletedMsg, 'image');
-        await sock.sendMessage(ownerJid, {
-          'image': imageBuffer,
-          'caption': msg,
-          'mentions': [sender]
-        });
-      } catch (downloadError) {
-        console.log("❌ Failed to download image:", downloadError);
-        msg += `\n⚠️ *Could not recover image*`;
-        await sock.sendMessage(ownerJid, {
-          'text': msg,
-          'mentions': [sender]
-        });
-      }
-      return;
-    }
-    
-    // VIDEO MESSAGE
-    if (deletedMsg.message.videoMessage) {
-      msg += `🎥 *Video Deleted*\n`;
-      msg += `📝 Caption: ${deletedMsg.message.videoMessage.caption || 'No caption'}\n`;
-      msg += `⏱️ Duration: ${deletedMsg.message.videoMessage.seconds || 'N/A'}s\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-      msg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
-      
-      try {
-        const videoBuffer = await sockInstance.downloadMediaMessage(deletedMsg, 'video');
-        await sock.sendMessage(ownerJid, {
-          'video': videoBuffer,
-          'caption': msg,
-          'mentions': [sender]
-        });
-      } catch (downloadError) {
-        console.log("❌ Failed to download video:", downloadError);
-        msg += `\n⚠️ *Could not recover video*`;
-        await sock.sendMessage(ownerJid, {
-          'text': msg,
-          'mentions': [sender]
-        });
-      }
-      return;
-    }
-    
-    // AUDIO / VOICE MESSAGE
-    if (deletedMsg.message.audioMessage) {
-      const isVoice = deletedMsg.message.audioMessage.ptt === true;
-      msg += isVoice ? `🎤 *Voice Message Deleted*\n` : `🎵 *Audio Deleted*\n`;
-      msg += `⏱️ Duration: ${deletedMsg.message.audioMessage.seconds || 'N/A'}s\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-      msg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
-      
-      try {
-        const audioBuffer = await sockInstance.downloadMediaMessage(deletedMsg, 'audio');
-        await sock.sendMessage(ownerJid, {
-          'audio': audioBuffer,
-          'mimetype': 'audio/mp4',
-          'ptt': isVoice || false,
-          'caption': msg,
-          'mentions': [sender]
-        });
-      } catch (downloadError) {
-        console.log("❌ Failed to download audio:", downloadError);
-        msg += `\n⚠️ *Could not recover audio*`;
-        await sock.sendMessage(ownerJid, {
-          'text': msg,
-          'mentions': [sender]
-        });
-      }
-      return;
-    }
-    
-    // STICKER MESSAGE
-    if (deletedMsg.message.stickerMessage) {
-      msg += `🎨 *Sticker Deleted*\n`;
-      msg += `📦 Pack: ${deletedMsg.message.stickerMessage.packId || 'Unknown'}\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-      msg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
-      
-      try {
-        const stickerBuffer = await sockInstance.downloadMediaMessage(deletedMsg, 'sticker');
-        await sock.sendMessage(ownerJid, {
-          'sticker': stickerBuffer,
-          'mentions': [sender]
-        });
-        // Send text separately for sticker (can't have caption with sticker)
-        await sock.sendMessage(ownerJid, {
-          'text': msg,
-          'mentions': [sender]
-        });
-      } catch (downloadError) {
-        console.log("❌ Failed to download sticker:", downloadError);
-        msg += `\n⚠️ *Could not recover sticker*`;
-        await sock.sendMessage(ownerJid, {
-          'text': msg,
-          'mentions': [sender]
-        });
-      }
-      return;
-    }
-    
-    // DOCUMENT MESSAGE
-    if (deletedMsg.message.documentMessage) {
-      msg += `📄 *Document Deleted*\n`;
-      msg += `📝 Title: ${deletedMsg.message.documentMessage.title || 'Untitled'}\n`;
-      msg += `📏 Size: ${(deletedMsg.message.documentMessage.fileLength || 0) / 1024} KB\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-      msg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
-      
-      try {
-        const docBuffer = await sockInstance.downloadMediaMessage(deletedMsg, 'document');
-        await sock.sendMessage(ownerJid, {
-          'document': docBuffer,
-          'mimetype': deletedMsg.message.documentMessage.mimetype || 'application/octet-stream',
-          'fileName': deletedMsg.message.documentMessage.title || 'document',
-          'caption': msg,
-          'mentions': [sender]
-        });
-      } catch (downloadError) {
-        console.log("❌ Failed to download document:", downloadError);
-        msg += `\n⚠️ *Could not recover document*`;
-        await sock.sendMessage(ownerJid, {
-          'text': msg,
-          'mentions': [sender]
-        });
-      }
-      return;
-    }
-    
-    // CONTACT MESSAGE
-    if (deletedMsg.message.contactMessage) {
-      msg += `👤 *Contact Deleted*\n`;
-      msg += `📛 Name: ${deletedMsg.message.contactMessage.displayName || 'Unknown'}\n`;
-      msg += `📱 Number: ${deletedMsg.message.contactMessage.vcard ? 'VCard attached' : 'N/A'}\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-      msg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
-      
-      await sock.sendMessage(ownerJid, {
-        'text': msg,
-        'mentions': [sender]
-      });
-      return;
-    }
-    
-    // LOCATION MESSAGE
-    if (deletedMsg.message.locationMessage) {
-      msg += `📍 *Location Deleted*\n`;
-      msg += `🌐 Lat: ${deletedMsg.message.locationMessage.degreesLatitude || 'N/A'}\n`;
-      msg += `🌐 Long: ${deletedMsg.message.locationMessage.degreesLongitude || 'N/A'}\n`;
-      msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-      msg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
-      
-      await sock.sendMessage(ownerJid, {
-        'text': msg,
-        'mentions': [sender]
-      });
-      return;
-    }
-    
-    // Default fallback
-    msg += `📎 *Media/File was deleted*\n`;
-    msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-    msg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
-    await sock.sendMessage(ownerJid, {
-      'text': msg,
-      'mentions': [sender]
-    });
-    
-    console.log(`✅ Anti-delete alert sent for ${sender}`);
-  } catch (error) {
-    console.log("❌ Anti-delete styled message error:", error);
-  }
-}
-
-// ============= NEW: BOT CONNECTION STYLED MESSAGE =============
+// ============= BOT CONNECTION STYLED MESSAGE =============
 async function sendStyledConnectionMessage(sock, userJid, mode, prefix) {
   try {
     let msg = `╔═══════════════════════════════╗\n`;
@@ -632,19 +417,24 @@ setTimeout(() => {
         return null;
       }
     }
-    
+
     // ============= FIXED: ANTI-DELETE WITH ALL MEDIA TYPES =============
     _0x243e88.ev.on("messages.upsert", async _0x43b2d7 => {
       if (conf.ANTIDELETE1 === "yes") {
-        const { messages: _0x17eec3 } = _0x43b2d7;
+        const {
+          messages: _0x17eec3
+        } = _0x43b2d7;
         const _0x20b50c = _0x17eec3[0x0];
-        if (!_0x20b50c.message) return;
-        
+        if (!_0x20b50c.message) {
+          return;
+        }
         const _0x48820c = _0x20b50c.key;
         const _0x213692 = _0x48820c.remoteJid;
         
-        // Skip status updates
-        if (_0x213692 === "status@broadcast") return;
+        // Skip status broadcasts
+        if (_0x213692 === "status@broadcast") {
+          return;
+        }
         
         if (!store.chats[_0x213692]) {
           store.chats[_0x213692] = [];
@@ -665,21 +455,226 @@ setTimeout(() => {
             try {
               const sender = _0x475212.key.participant || _0x475212.key.remoteJid;
               const ownerJid = conf.NUMERO_OWNER + "@s.whatsapp.net";
+              const senderName = sender.split('@')[0];
               
-              // Send styled anti-delete message with all media types
-              await sendStyledAntiDelete(_0x243e88, ownerJid, _0x475212, sender, _0x243e88);
+              // Build the alert message
+              let alertMsg = `╔══════════════════════════╗\n`;
+              alertMsg += `  🚫 *ANTI-DELETE ALERT* 🚫\n`;
+              alertMsg += `╚══════════════════════════╝\n\n`;
+              alertMsg += `👤 *User:* @${senderName}\n`;
+              alertMsg += `⏰ *Time:* ${new Date().toLocaleString()}\n\n`;
+              alertMsg += `📝 *Deleted Message:*\n`;
+              alertMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
               
-              // Also notify in group
-              const groupMsg = `╔══════════════════════════╗\n`;
-              const groupMsg2 = `  🚫 *MESSAGE DELETED* 🚫\n`;
-              const groupMsg3 = `╚══════════════════════════╝\n\n`;
-              const groupMsg4 = `👤 @${sender.split('@')[0]} deleted a message!\n`;
-              const groupMsg5 = `🔞 *NEXUS-AI doesn't allow deletion!*`;
+              // Check for conversation (text)
+              if (_0x475212.message.conversation) {
+                alertMsg += `💬 ${_0x475212.message.conversation}\n`;
+                alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+                await _0x243e88.sendMessage(ownerJid, {
+                  'text': alertMsg,
+                  'mentions': [sender]
+                });
+                console.log(`✅ Anti-delete text sent for ${sender}`);
+                return;
+              }
               
-              await _0x243e88.sendMessage(_0x213692, {
-                'text': groupMsg + groupMsg2 + groupMsg3 + groupMsg4 + groupMsg5,
+              // Extended Text Message
+              if (_0x475212.message.extendedTextMessage) {
+                const text = _0x475212.message.extendedTextMessage.text || '';
+                alertMsg += `💬 ${text}\n`;
+                alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+                await _0x243e88.sendMessage(ownerJid, {
+                  'text': alertMsg,
+                  'mentions': [sender]
+                });
+                console.log(`✅ Anti-delete extended text sent for ${sender}`);
+                return;
+              }
+              
+              // IMAGE MESSAGE
+              if (_0x475212.message.imageMessage) {
+                alertMsg += `🖼️ *Image Deleted*\n`;
+                alertMsg += `📝 Caption: ${_0x475212.message.imageMessage.caption || 'No caption'}\n`;
+                alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+                
+                try {
+                  // Download image
+                  const imageBuffer = await _0x243e88.downloadMediaMessage(_0x475212, 'image');
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'image': imageBuffer,
+                    'caption': alertMsg,
+                    'mentions': [sender]
+                  });
+                  console.log(`✅ Anti-delete image sent for ${sender}`);
+                } catch (downloadError) {
+                  console.log("❌ Failed to download image:", downloadError);
+                  alertMsg += `\n⚠️ *Could not recover image*`;
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'text': alertMsg,
+                    'mentions': [sender]
+                  });
+                }
+                return;
+              }
+              
+              // VIDEO MESSAGE
+              if (_0x475212.message.videoMessage) {
+                alertMsg += `🎥 *Video Deleted*\n`;
+                alertMsg += `📝 Caption: ${_0x475212.message.videoMessage.caption || 'No caption'}\n`;
+                alertMsg += `⏱️ Duration: ${_0x475212.message.videoMessage.seconds || 'N/A'}s\n`;
+                alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+                
+                try {
+                  const videoBuffer = await _0x243e88.downloadMediaMessage(_0x475212, 'video');
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'video': videoBuffer,
+                    'caption': alertMsg,
+                    'mentions': [sender]
+                  });
+                  console.log(`✅ Anti-delete video sent for ${sender}`);
+                } catch (downloadError) {
+                  console.log("❌ Failed to download video:", downloadError);
+                  alertMsg += `\n⚠️ *Could not recover video*`;
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'text': alertMsg,
+                    'mentions': [sender]
+                  });
+                }
+                return;
+              }
+              
+              // AUDIO / VOICE MESSAGE
+              if (_0x475212.message.audioMessage) {
+                const isVoice = _0x475212.message.audioMessage.ptt === true;
+                alertMsg += isVoice ? `🎤 *Voice Message Deleted*\n` : `🎵 *Audio Deleted*\n`;
+                alertMsg += `⏱️ Duration: ${_0x475212.message.audioMessage.seconds || 'N/A'}s\n`;
+                alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+                
+                try {
+                  const audioBuffer = await _0x243e88.downloadMediaMessage(_0x475212, 'audio');
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'audio': audioBuffer,
+                    'mimetype': 'audio/mp4',
+                    'ptt': isVoice || false
+                  });
+                  // Send caption separately for audio
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'text': alertMsg,
+                    'mentions': [sender]
+                  });
+                  console.log(`✅ Anti-delete audio sent for ${sender}`);
+                } catch (downloadError) {
+                  console.log("❌ Failed to download audio:", downloadError);
+                  alertMsg += `\n⚠️ *Could not recover audio*`;
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'text': alertMsg,
+                    'mentions': [sender]
+                  });
+                }
+                return;
+              }
+              
+              // STICKER MESSAGE
+              if (_0x475212.message.stickerMessage) {
+                alertMsg += `🎨 *Sticker Deleted*\n`;
+                alertMsg += `📦 Pack: ${_0x475212.message.stickerMessage.packId || 'Unknown'}\n`;
+                alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+                
+                try {
+                  const stickerBuffer = await _0x243e88.downloadMediaMessage(_0x475212, 'sticker');
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'sticker': stickerBuffer
+                  });
+                  // Send caption separately for sticker
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'text': alertMsg,
+                    'mentions': [sender]
+                  });
+                  console.log(`✅ Anti-delete sticker sent for ${sender}`);
+                } catch (downloadError) {
+                  console.log("❌ Failed to download sticker:", downloadError);
+                  alertMsg += `\n⚠️ *Could not recover sticker*`;
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'text': alertMsg,
+                    'mentions': [sender]
+                  });
+                }
+                return;
+              }
+              
+              // DOCUMENT MESSAGE
+              if (_0x475212.message.documentMessage) {
+                alertMsg += `📄 *Document Deleted*\n`;
+                alertMsg += `📝 Title: ${_0x475212.message.documentMessage.title || 'Untitled'}\n`;
+                alertMsg += `📏 Size: ${(_0x475212.message.documentMessage.fileLength || 0) / 1024} KB\n`;
+                alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+                
+                try {
+                  const docBuffer = await _0x243e88.downloadMediaMessage(_0x475212, 'document');
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'document': docBuffer,
+                    'mimetype': _0x475212.message.documentMessage.mimetype || 'application/octet-stream',
+                    'fileName': _0x475212.message.documentMessage.title || 'document',
+                    'caption': alertMsg,
+                    'mentions': [sender]
+                  });
+                  console.log(`✅ Anti-delete document sent for ${sender}`);
+                } catch (downloadError) {
+                  console.log("❌ Failed to download document:", downloadError);
+                  alertMsg += `\n⚠️ *Could not recover document*`;
+                  await _0x243e88.sendMessage(ownerJid, {
+                    'text': alertMsg,
+                    'mentions': [sender]
+                  });
+                }
+                return;
+              }
+              
+              // CONTACT MESSAGE
+              if (_0x475212.message.contactMessage) {
+                alertMsg += `👤 *Contact Deleted*\n`;
+                alertMsg += `📛 Name: ${_0x475212.message.contactMessage.displayName || 'Unknown'}\n`;
+                alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+                await _0x243e88.sendMessage(ownerJid, {
+                  'text': alertMsg,
+                  'mentions': [sender]
+                });
+                console.log(`✅ Anti-delete contact sent for ${sender}`);
+                return;
+              }
+              
+              // LOCATION MESSAGE
+              if (_0x475212.message.locationMessage) {
+                alertMsg += `📍 *Location Deleted*\n`;
+                alertMsg += `🌐 Lat: ${_0x475212.message.locationMessage.degreesLatitude || 'N/A'}\n`;
+                alertMsg += `🌐 Long: ${_0x475212.message.locationMessage.degreesLongitude || 'N/A'}\n`;
+                alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+                await _0x243e88.sendMessage(ownerJid, {
+                  'text': alertMsg,
+                  'mentions': [sender]
+                });
+                console.log(`✅ Anti-delete location sent for ${sender}`);
+                return;
+              }
+              
+              // Default fallback for any other message type
+              alertMsg += `📎 *Media/File was deleted*\n`;
+              alertMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+              alertMsg += `🔞 *NEXUS-AI doesn't allow message deletion!*`;
+              await _0x243e88.sendMessage(ownerJid, {
+                'text': alertMsg,
                 'mentions': [sender]
               });
+              console.log(`✅ Anti-delete fallback sent for ${sender}`);
               
             } catch (_0x4be404) {
               console.error("❌ Anti-delete error:", _0x4be404);
@@ -689,7 +684,7 @@ setTimeout(() => {
       }
     });
     // ============= END FIXED ANTI-DELETE =============
-    
+
     // ============= STATUS REACTION =============
     const _0xe3bf32 = _0x3c0a4d => new Promise(_0x6b4f98 => setTimeout(_0x6b4f98, _0x3c0a4d));
     let _0x242b59 = 0x0;
@@ -719,7 +714,7 @@ setTimeout(() => {
         }
       });
     }
-    
+
     // ============= AUTO REACT EMOJI MAP =============
     const _0x8a5dbb = {
       'hello': ['👋', '🙂', '😊', "🙋‍♂️", "🙋‍♀️"],
@@ -771,11 +766,64 @@ setTimeout(() => {
       'john': ['👑', '🔥', '💥', '😎', '💯'],
       'mike': ['💪', '🏆', '🔥', '💥', '🚀'],
       'lisa': ['💖', '👑', '🌸', '😍', '🌺'],
-      'emily': ['💖', '💃', '👑', '🎉', '🎀']
+      'emily': ['💖', '💃', '👑', '🎉', '🎀'],
+      'happy': ['😁', '😄', '😊', '🙌', '🎉', '🥳', '💃', '🕺', '🔥'],
+      'excited': ['🤩', '🎉', '🥳', '🎊', '😆', '🤗', '💥', '🚀'],
+      'love': ['❤️', '💖', '💘', '💝', '😍', '😘', '💍', '💑', '🌹'],
+      'grateful': ['🙏', '💐', '🥰', '❤️', '😊'],
+      'thankful': ['🙏', '💖', '💐', '🤗', '😇'],
+      'sad': ['😢', '😭', '😞', '💔', '😔', '😓', '😖'],
+      'angry': ['😡', '😠', '🤬', '💢', '👊', '💥', '⚡'],
+      'frustrated': ['😤', '😩', '🤯', '😑', '🌀'],
+      'bored': ['😴', '🥱', '🙄', '😑', '😒'],
+      'surprised': ['😲', '😳', '😮', '😯', '😲', '🙀'],
+      'shocked': ['😱', '😳', '😯', '💥', '🤯'],
+      'wow': ['😲', '😱', '🤩', '🤯', '💥', '🚀'],
+      'crying': ['😭', '😢', '💔', '😞', '😓'],
+      "miss you": ['😭', '💔', '😔', '😢', '❤️'],
+      'lonely': ['😔', '😭', '😢', '💔', '🙁'],
+      'help': ['🆘', '❓', '🤔', "🙋‍♂️", "🙋‍♀️", '💡'],
+      "need assistance": ['🆘', "💁‍♂️", '💁‍♀️', '❓', '🙏'],
+      'sorry': ['😔', '🙏', '💔', '😓', '🥺', "🙇‍♂️", "🙇‍♀️"],
+      'apology': ['😔', '😞', '🙏', '💔', '🙇‍♂️', "🙇‍♀️"],
+      "good job": ['👏', '💯', '🎉', '🌟', '👍', '👏'],
+      "well done": ['👏', '🎉', '🎖️', '💪', '🔥', '🏆'],
+      "you can do it": ['💪', '🔥', '💯', '🚀', '🌟'],
+      'congratulations': ['🎉', '🏆', '🎊', '🎁', '👏', '🍾'],
+      'cheers': ['🥂', '🍻', '🍾', '🍷', '🥳', '🎉'],
+      'goodbye': ['👋', '😢', '💔', "👋🏻", "🚶‍♂️", "🚶‍♀️"],
+      'bye': ['👋', '👋🏻', '🥲', '🚶‍♂️', "🚶‍♀️"],
+      "see you": ['👋', "👋🏻", '🤗', '✌️', "🙋‍♂️", "🙋‍♀️"],
+      'hello': ['👋', '🙂', '😊', "🙋‍♂️", "🙋‍♀️"],
+      'hi': ['👋', '🙂', '😁', '🙋‍♂️', "🙋‍♀️"],
+      'party': ['🎉', '🥳', '🎤', '💃', '🕺', '🍻', '🎶'],
+      'fun': ['🎮', '🎲', '🤣', '🎉', '🃏'],
+      'play': ['🎮', '🏀', '⚽', '🎾', '🎱', '🎲', '🏆'],
+      'work': ['💻', "🖥️", '💼', '📅', '📝'],
+      'school': ['📚', '🏫', '🎒', "👨‍🏫", '👩‍🏫'],
+      'study': ['📖', '📝', '💡', '📚', '🎓'],
+      'summer': ['🌞', "🏖️", '🌴', '🍉', '🌻'],
+      'winter': ['❄️', '☃️', '🎿', '🔥', '⛄'],
+      'autumn': ['🍁', '🍂', '🎃', '🍂', '🍁'],
+      'spring': ['🌸', '🌼', '🌷', '🌱', '🌺'],
+      'birthday': ['🎂', '🎉', '🎁', '🎈', '🎊'],
+      'anniversary': ['💍', '🎉', '🎁', '🎈', '💑'],
+      'robot': ['🤖', '⚙️', '🔧', '🤖', '🧠'],
+      'bot': ['🤖', '🧠', '⚙️', '💻', "🖥️"],
+      'thanks': ['🙏', '💖', '😊', '❤️', '💐'],
+      "good luck": ['🍀', '🍀', '💯', '🍀', '🎯'],
+      'john': ['👑', '🔥', '💥', '😎', '💯'],
+      'mike': ['💪', '🏆', '🔥', '💥', '🚀'],
+      'lisa': ['💖', '👑', '🌸', '😍', '🌺'],
+      'emily': ['💖', '💃', '👑', '🎉', '🎀'],
+      'food': ['🍕', '🍔', '🍟', '🍲', '🍣', '🍩'],
+      'drink': ['🍺', '🍷', '🥂', '🍾', '🥤'],
+      'coffee': ['☕', '🥤', '🍵', '🥶'],
+      'tea': ['🍵', '🫖', '🍂', '🍃']
     };
-    
+
     const _0x42c72f = ['😎', '🔥', '💥', '💯', '✨', '🌟', '🌈', '⚡', '💎', '🌀', '👑', '🎉', '🎊', '🦄', '👽', '🛸', '🚀', '🦋', '💫', '🍀', '🎶', '🎧', '🎸', '🎤', '🏆', '🏅', '🌍', '🌎', '🌏', '🎮', '🎲', '💪', "🏋️", '🥇', '👟', '🏃', '🚴', '🚶', '🏄', '⛷️', "🕶️", '🧳', '🍿', '🍿', '🥂', '🍻', '🍷', '🍸', '🥃', '🍾', '🎯', '⏳', '🎁', '🎈', '🎨', '🌻', '🌸', '🌺', '🌹', '🌼', '🌞', '🌝', '🌜', '🌙', '🌚', '🍀', '🌱', '🍃', '🍂', '🌾', '🐉', '🐍', '🦓', '🦄', '🦋', '🦧', '🦘', '🦨', '🦡', '🐉', '🐅', '🐆', '🐓', '🐢', '🐊', '🐠', '🐟', '🐡', '🦑', '🐙', '🦀', '🐬', '🦕', '🦖', '🐾', '🐕', '🐈', '🐇', '🐾', '🐁', '🐀', "🐿️"];
-    
+
     const _0x2b754b = _0x58b36a => {
       const _0x40361c = _0x58b36a.split(/\s+/);
       for (const _0x52a5fa of _0x40361c) {
@@ -786,7 +834,7 @@ setTimeout(() => {
       }
       return _0x42c72f[Math.floor(Math.random() * _0x42c72f.length)];
     };
-    
+
     const _0x4986d0 = _0x17b17c => {
       const _0x1b2acc = _0x8a5dbb[_0x17b17c.toLowerCase()];
       if (_0x1b2acc && _0x1b2acc.length > 0x0) {
@@ -794,7 +842,7 @@ setTimeout(() => {
       }
       return null;
     };
-    
+
     if (conf.AUTO_REACT === "yes") {
       console.log("🔄 AUTO_REACT enabled...");
       _0x243e88.ev.on('messages.upsert', async _0x4e9e98 => {
@@ -824,7 +872,7 @@ setTimeout(() => {
         }
       });
     }
-    
+
     // ============= VCF COMMAND =============
     _0x243e88.ev.on("messages.upsert", async _0x3340c3 => {
       const { messages: _0x216e8c } = _0x3340c3;
@@ -841,13 +889,12 @@ setTimeout(() => {
           });
           return;
         }
-        await createAndSendGroupVCard(_0x30ff1a, "nexus family", _0x243e88);
       }
     });
-    
+
     // ============= FIXED: ANTI-CALL - SINGLE RESPONSE =============
     const processedCalls = new Set();
-    
+
     _0x243e88.ev.on("call", async _0x470dda => {
       if (conf.ANTICALL === "yes") {
         try {
@@ -857,26 +904,18 @@ setTimeout(() => {
           const callId = callData.id;
           const from = callData.from;
           
-          // Check if this call was already processed
           if (processedCalls.has(callId)) {
             console.log(`📞 Call ${callId} already processed, skipping...`);
             return;
           }
           
-          // Mark as processed
           processedCalls.add(callId);
-          
-          // Remove from set after 10 seconds to prevent memory buildup
           setTimeout(() => {
             processedCalls.delete(callId);
           }, 10000);
           
           console.log(`📞 Incoming call from ${from} - Rejecting...`);
-          
-          // Reject the call
           await _0x243e88.rejectCall(callId, from);
-          
-          // Send single response after short delay
           await baileys_1.delay(1000);
           
           await _0x243e88.sendMessage(from, {
@@ -884,24 +923,21 @@ setTimeout(() => {
           });
           
           console.log(`✅ Call rejected and response sent to ${from}`);
-          
         } catch (error) {
           console.log("❌ Anti-call error:", error);
         }
       }
     });
     // ============= END ANTI-CALL =============
-    
+
     // ============= MAIN MESSAGE HANDLER =============
     _0x243e88.ev.on("messages.upsert", async _0x5c6cf5 => {
       const { messages: _0x3387e4 } = _0x5c6cf5;
       const _0x24b35c = _0x3387e4[0x0];
       if (!_0x24b35c.message) return;
       
-      // Skip status updates
       if (_0x24b35c.key && _0x24b35c.key.remoteJid === "status@broadcast") return;
       
-      // Skip reactions
       const contentType = baileys_1.getContentType(_0x24b35c.message);
       if (contentType === 'reactionMessage') return;
       
@@ -975,7 +1011,6 @@ setTimeout(() => {
         return _0x55b787;
       }
       
-      // Presence update
       var _0x22a59d = conf.ETAT;
       if (_0x22a59d == 0x1) {
         await _0x243e88.sendPresenceUpdate("available", _0xbaefcb);
@@ -1026,7 +1061,6 @@ setTimeout(() => {
         'mybotpic': _0x215274
       };
       
-      // AUTO READ
       if (conf.AUTO_READ === 'yes') {
         _0x243e88.ev.on("messages.upsert", async _0x490d27 => {
           const { messages: _0x543d2e } = _0x490d27;
@@ -1038,12 +1072,10 @@ setTimeout(() => {
         });
       }
       
-      // AUTO READ STATUS
       if (_0x24b35c.key && _0x24b35c.key.remoteJid === "status@broadcast" && conf.AUTO_READ_STATUS === 'yes') {
         await _0x243e88.readMessages([_0x24b35c.key]);
       }
       
-      // AUTO DOWNLOAD STATUS
       if (_0x24b35c.key && _0x24b35c.key.remoteJid === "status@broadcast" && conf.AUTO_DOWNLOAD_STATUS === 'yes') {
         if (_0x24b35c.message.extendedTextMessage) {
           var _0x2cea19 = _0x24b35c.message.extendedTextMessage.text;
@@ -1077,12 +1109,10 @@ setTimeout(() => {
         }
       }
       
-      // Skip for specific group if not dev
       if (!_0x296907 && _0xbaefcb == "120363158701337904@g.us") {
         return;
       }
       
-      // Level system
       if (_0xf697f8 && _0x133a07.endsWith('s.whatsapp.net')) {
         const { ajouterOuMettreAJourUserData: _0x48d8c5 } = require("./bdd/level");
         try {
@@ -1092,7 +1122,6 @@ setTimeout(() => {
         }
       }
       
-      // MENTION response
       try {
         if (_0x24b35c.message[_0x3ac7a5].contextInfo && 
             _0x24b35c.message[_0x3ac7a5].contextInfo.mentionedJid && 
@@ -1146,7 +1175,7 @@ setTimeout(() => {
         }
       } catch (_0x14e2ce) {}
       
-      // ============= FIXED ANTI-LINK =============
+      // ============= ANTI-LINK =============
       try {
         const isAntiLinkEnabled = await verifierEtatJid(_0xbaefcb);
         
@@ -1333,7 +1362,6 @@ setTimeout(() => {
           };
           
           var _0x54a3df = "🤖 Bot detected!\n";
-          
           var _0x1ae492 = await atbrecupererActionJid(_0xbaefcb);
           
           if (_0x1ae492 === "remove") {
@@ -1451,8 +1479,8 @@ setTimeout(() => {
         }
       }
     });
-    
-    // ============= GROUP PARTICIPANTS HANDLER WITH STYLED MESSAGES =============
+
+    // ============= GROUP PARTICIPANTS HANDLER =============
     const { recupevents: _0xad0996 } = require("./bdd/welcome");
     
     _0x243e88.ev.on("group-participants.update", async _0x22fd53 => {
@@ -1499,7 +1527,7 @@ setTimeout(() => {
         console.error("Group participants update error:", _0x51b1a3);
       }
     });
-    
+
     // ============= CRON JOBS =============
     async function _0x1f93c4() {
       const _0x25cc58 = require("node-cron");
@@ -1536,7 +1564,7 @@ setTimeout(() => {
         console.log("No cron jobs activated");
       }
     }
-    
+
     // ============= CONTACTS HANDLER =============
     _0x243e88.ev.on("contacts.upsert", async _0x45e936 => {
       const _0x5d3871 = _0x2133d1 => {
@@ -1550,7 +1578,7 @@ setTimeout(() => {
       };
       _0x5d3871(_0x45e936);
     });
-    
+
     // ============= CONNECTION UPDATE =============
     _0x243e88.ev.on("connection.update", async _0x147343 => {
       const { lastDisconnect: _0x41b97c, connection: _0x52925b } = _0x147343;
@@ -1595,10 +1623,8 @@ setTimeout(() => {
         
         await _0x1f93c4();
         
-        // Start auto-about rotation
         startAutoAbout(_0x243e88);
         
-        // Send styled connection message
         if (conf.DP.toLowerCase() === "yes") {
           await sendStyledConnectionMessage(_0x243e88, _0x243e88.user.id, _0x50f3b5, prefixe);
         }
@@ -1629,10 +1655,10 @@ setTimeout(() => {
         _0x1b1480();
       }
     });
-    
+
     // ============= CREDS UPDATE =============
     _0x243e88.ev.on("creds.update", _0x43ea6e);
-    
+
     // ============= DOWNLOAD MEDIA FUNCTION =============
     _0x243e88.downloadAndSaveMediaMessage = async (_0x4a8528, _0x4ef4eb = '', _0x213632 = true) => {
       let _0x55b529 = _0x4a8528.msg ? _0x4a8528.msg : _0x4a8528;
@@ -1649,7 +1675,7 @@ setTimeout(() => {
       await fs.writeFileSync(_0x1689a1, _0x2cb55c);
       return _0x1689a1;
     };
-    
+
     // ============= AWAIT FOR MESSAGE FUNCTION =============
     _0x243e88.awaitForMessage = async (_0x272ee8 = {}) => {
       return new Promise((_0x2d207e, _0x25c039) => {
@@ -1701,10 +1727,10 @@ setTimeout(() => {
         }
       });
     };
-    
+
     return _0x243e88;
   }
-  
+
   let _0x5519b4 = require.resolve(__filename);
   fs.watchFile(_0x5519b4, () => {
     fs.unwatchFile(_0x5519b4);
@@ -1712,6 +1738,6 @@ setTimeout(() => {
     delete require.cache[_0x5519b4];
     require(_0x5519b4);
   });
-  
+
   _0x1b1480();
 }, 0x1388);
