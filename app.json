@@ -78,7 +78,6 @@
 	,
     "HEROKU_API_KEY": {
     "description": "insert your heroku api-key (this is optionnal)",
-	"value":"HRKU-AAJ9hHKvUhMdN9gdc69a_jLhGxblBxSJ6wPzt0pxqSiw_____w280uRuC2hH",
 ",
      "required" :false
     },
