@@ -1,4 +1,4 @@
-FROM node:lts
+FROM node:lts-buster
 
 RUN apt-get update && \
   apt-get install -y \
@@ -8,14 +8,17 @@ RUN apt-get update && \
   apt-get upgrade -y && \
   npm i pm2 -g && \
   rm -rf /var/lib/apt/lists/*
+  
+RUN git clone https://github.com/KYPHER26/KYPHER_XMD.git  /root/Zokou_Bot
+WORKDIR /root/Zokou_Bot/
 
-WORKDIR /app
 
 COPY package.json .
+RUN npm install pm2 -g
 RUN npm install --legacy-peer-deps
 
 COPY . .
 
 EXPOSE 5000
 
-CMD ["node", "index.js"]
+CMD ["npm", "run" , "index.js"

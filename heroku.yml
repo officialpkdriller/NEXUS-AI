@@ -2,4 +2,6 @@ build:
   docker:
       worker: Dockerfile
 run:
-   worker:   npm run toshtech
+   worker:   npm run bmwmd
+   
+   
