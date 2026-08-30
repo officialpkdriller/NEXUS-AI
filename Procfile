@@ -1,3 +1,2 @@
 
-
-web: node --max-old-space-size=450 --no-deprecation pkdriller.js
+web: node pkdriller.js && node pkdriller.js
