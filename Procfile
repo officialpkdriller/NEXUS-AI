@@ -1,2 +1,3 @@
 
-web: node pkdriller.js && node pkdriller.js
+
+web: node --max-old-space-size=450 --no-deprecation rahmani.js
