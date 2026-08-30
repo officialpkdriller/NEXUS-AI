@@ -1,6 +1,4 @@
-Absolutely. I’ll keep the **Zokou structure and functionality**, but rebrand it completely for **NEXUS-AI** and give the messages a more distinctive futuristic style. I’ve also removed the old **Rahmany** branding.
 
-```javascript
 const { zokou } = require("../framework/zokou");
 
 zokou({
